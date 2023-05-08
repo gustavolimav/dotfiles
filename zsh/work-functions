@@ -1,0 +1,450 @@
+# [CD MODULE]
+# This function will cd to the module you select
+function cd_module() {
+	emulate -LR bash
+		local git_dir="$(git rev-parse --show-toplevel)"
+
+		local module_dir="$(
+			git -C "${git_dir}" ls-files -- \
+				':!:**/src/**' \
+				\
+				'*.bnd' \
+				'*build.xml' \
+				'*pom.xml' |
+
+				#
+				# Get the directory name with sed instead of dirname because it is much faster
+				#
+
+				sed -E \
+					-e 's,[^/]*$,,g' \
+					\
+					-e 's,/$,,g' \
+					-e '/^$/d' |
+
+				#
+				# Remove duplicates because some modules have more than one *.bnd file
+				#
+
+				uniq |
+
+				#
+				# Pass the results to fzf
+				#
+				fzf \
+					--exit-0 \
+					--no-multi \
+					--query "$*" \
+					--select-1 \
+				;
+		)"
+
+		if [ -n "${module_dir}" ]
+		then
+			cd "${git_dir}/${module_dir}" || return 1
+		fi
+}
+
+#!/bin/bash
+
+# [BUNDLE CREATION - BRANCHES ONLY]
+# This function will create a bundle with the same name as the branch you are on
+# If you want to create a bundle with a custom name you can pass it as a parameter
+# Example: createBundle myBundle
+createBundle(){
+	emulate -LR bash
+				defaultName=$(more app.server.me.properties | grep "app.server.parent.dir" | cut -d'=' -f2 | cut -d'/' -f6)
+
+        if [[ $1 == "" ]]
+        then
+                name=$(git branch --show-current)
+        else
+                name=$1
+        fi
+
+        if [[ $name == "" ]]
+        then
+                echo "ERROR WHEN TRYING TO EXECUTE COMMAND: Branch not found or parameter not entered"
+        else
+                echo "app.server.parent.dir=${BUNDLES_HOME}/${name}" > app.server.me.properties
+								cp ~/tags/build.me.properties .
+                ant setup-profile-dxp 
+                ant all
+                echo "BUNDLE CREATION COMPLETED: Bundle created on path ${BUNDLES_HOME}/${name}"
+								echo "app.server.parent.dir=/home/me/dev/bundles/${defaultName}" > app.server.me.properties
+								cp ${BUNDLES_HOME}/liferay-portal/portal-ext.properties ${BUNDLES_HOME}/${name}
+        fi
+}
+
+# [BUNDLE CHECKOUT]
+# This function will checkout a bundle with the same name as the branch you are on
+# If you want to checkout a bundle with a custom name you can pass it as a parameter
+cbb(){
+	emulate -LR bash
+			if [[ $1 == "" ]]
+			then
+				name=$(git branch --show-current) 
+			else
+				name=$1
+			fi
+
+			if [ -f app.server.me.properties ]; then
+				bundlepath="/home/me/dev/projects/bundles/${name}"
+				cd $bundlepath
+			else
+				echo "ERROR RUNNING COMMAND: unable to find the bundle by the current branch name" 
+			fi
+}
+
+# [BUNDLE DEPLOY CURRENT BRANCH]
+# This function will deploy the current branch on the bundle with the same name as the branch you are on
+# If you want to deploy a bundle with a custom name you can pass it as a parameter
+gwcdCBB() {
+	emulate -LR bash
+			defaultName=$(more app.server.me.properties | grep "app.server.parent.dir" | cut -d'=' -f2 | cut -d'/' -f6) # preserve default name
+
+			if [[ $1 == "" ]]
+			then
+				name=$(git branch --show-current) 
+			else
+				name=$1
+			fi
+
+			if [ -f app.server.me.properties ]; then
+				echo "app.server.parent.dir=/home/me/dev/bundles/${name}" > /home/me/dev/projects/liferay-portal/app.server.me.properties
+				gw clean deploy
+				echo "app.server.parent.dir=/home/me/dev/bundles/${defaultName}" > /home/me/dev/projects/liferay-portal/app.server.me.properties
+				
+			else
+				echo "ERROR RUNNING COMMAND: unable to find the bundle by the current branch name" 
+			fi
+}
+
+# [RUN TOMCAT WITH DEBUGGER ON ANY BUNDLE FOLDER]
+# This function will run the last version of tomcat with the debugger on
+# inside the bundle folder you are on
+run(){
+	emulate -LR bash
+			tomcatfile=$(find . -name 'tomcat*' -type d | sort -r | head -n 1)
+			if [[ $tomcatfile == "" ]]; then
+				previousdirectory="../"
+				for i in {1..5}; do
+						tomcatfile=$(find ${previousdirectory} -name 'tomcat-*' -type d | sort -r | head -n 1)
+					if [[ $tomcatfile == "" ]]; then previousdirectory="${previousdirectory}../"; else break; fi
+				done
+			fi
+			if [[ $tomcatfile == "" ]]; then echo "ERROR RUNNING COMMAND: check if the command was run inside a bundle"; 
+			else ./$tomcatfile/bin/catalina.sh jpda run; fi
+}
+
+function s() {
+	emulate -LR bash
+			version="
+			master-8.6.2
+			7.3.x-8.6.2
+			7.2.x-8.6.2
+			7.2.x-7.5.0
+			7.1.x-8.6.2
+			7.1.x-7.5.0
+			7.0.x-5.2.1"
+
+			select choice in $version; do
+				if [ "$choice" == "master-8.6.2" ]; then
+					start-solr 8.6.2 8983 8 ""
+				elif [ "$choice" == "7.3.x-8.6.2" ]; then
+					start-solr 8.6.2 8983 8 "-7.3.x"
+				elif [ "$choice" == "7.2.x-8.6.2" ]; then
+					start-solr 8.6.2 8983 8 "-7.2.x"
+				elif [ "$choice" == "7.2.x-7.5.0" ]; then
+					start-solr 7.5.0 8983 7 "-7.2.x"
+				elif [ "$choice" == "7.1.x-8.6.2" ]; then
+					start-solr 8.6.2 8983 8 "-7.1.x"
+				elif [ "$choice" == "7.1.x-7.5.0" ]; then
+					start-solr 7.5.0 8983 7 "-7.1.x"
+				elif [ "$choice" == "7.0.x-5.2.1" ]; then
+					start-solr 5.2.1 8983 5 "-7.0.x"
+				fi
+				break
+			done
+}
+
+# [START SOLR]
+# This function will start solr with the version you choose
+# You can choose the version of the solr server and the version of the portal
+function start-solr() {
+	emulate -LR bash
+			solrServerSuffix="$1"
+			portNumber="$2"
+			solrVersion="$3"
+			portalVersion="$4"
+
+			if [ "$1" == "help" ]; then
+				echo "Usage: start-solr [solrServerSuffix] [portNumber] [solrVersion] [portalVersion]"
+				echo "Example: start-solr 8.6.2 8983 8"
+				echo "Example: start-solr 8.6.2 8983 8 -7.3.x"
+				echo "Example: start-solr 8.6.2 8983 8 -7.2.x"
+				echo "Example: start-solr 7.5.0 8983 7 -7.2.x"
+				echo "Example: start-solr 8.6.2 8983 8 -7.1.x"
+				echo "Example: start-solr 7.5.0 8983 7 -7.1.x"
+				echo "Example: start-solr 5.2.1 8983 5 -7.0.x"
+				return
+			fi
+
+			read -ep "Delete old index? (y):" deleteOldIndex
+
+			if [ "$deleteOldIndex" != "n" ]; then
+				rm -rf ~/solr/solr-$solrServerSuffix/server/solr/liferay/data
+			fi
+			
+			echo "Copying schema.xml, managed-schema.xml and solrconfig.xml..."
+
+			if [ "$solrVersion" == "5" ]; then
+				cp ~/dev/projects/liferay-portal$portalVersion/modules/apps/portal-search-solr/portal-search-solr/src/main/resources/META-INF/resources/schema.xml ~/solr/solr-$solrServerSuffix/server/solr/liferay/conf
+				cp ~/dev/projects/liferay-portal$portalVersion/modules/apps/portal-search-solr/portal-search-solr/src/main/resources/META-INF/resources/solrconfig.xml ~/solr/solr-$solrServerSuffix/server/solr/liferay/conf
+			else
+				# cp ~/dev/projects/liferay-portal$portalVersion/modules/apps/portal-search-solr$solrVersion/portal-search-solr$solrVersion-impl/src/main/resources/META-INF/resources/managed-schema.xml ~/solr/solr-$solrServerSuffix/solr/server/solr/liferay/conf
+				cp /home/me/solr/solr-8.6.2/server/solr/configsets/_default/conf/* -r ~/solr/solr-$solrServerSuffix/server/solr/liferay/conf
+				cp ~/dev/projects/liferay-portal$portalVersion/modules/apps/portal-search-solr$solrVersion/portal-search-solr$solrVersion-impl/src/main/resources/META-INF/resources/schema.xml ~/solr/solr-$solrServerSuffix/server/solr/liferay/conf
+				cp ~/dev/projects/liferay-portal$portalVersion/modules/apps/portal-search-solr$solrVersion/portal-search-solr$solrVersion-impl/src/main/resources/META-INF/resources/solrconfig.xml ~/solr/solr-$solrServerSuffix/server/solr/liferay/conf
+			fi
+			
+			cd ~/solr/solr-$solrServerSuffix/bin
+			./solr start -f -p $portNumber
+}
+
+# [CLEAN DB]
+# This function will clean the database
+# Example: cdb <database name>
+cdb() {
+	emulate -LR bash
+			if [ "$1" == "" ]; then
+				echo "ERROR: You must specify a database name (help / <database name>)" 
+				return
+			fi
+
+			if [ "$1" == "help" ]; then
+				echo "cdb <database name>"
+				return
+			fi
+
+			if [ "$1" == "" ]; then
+				mysql -u root -p -D lportal -e "DROP DATABASE lportal"
+
+				mysql -u root -p -e "CREATE DATABASE lportal character set UTF8 collate utf8_general_ci;"
+			else
+				name="$1"
+
+				mysql -u root -p -D lportal -e "DROP DATABASE ${name}"
+
+				mysql -u root -p -e "CREATE DATABASE ${name} character set UTF8 collate utf8_general_ci;"
+			fi
+}
+
+# [DUMP DB]
+# Function to export or import a database
+# Example: dump <import/export> <database name> <dump name>
+dump() {
+	emulate -LR bash
+		if [ "$1" == "" ]; then
+			echo "ERROR: You must specify an action (import / export / help / list)" 
+			return
+		fi
+
+		if [ "$1" == "help" ]; then
+			echo "dump import <database name> <dump name>"
+			echo "dump export <database name> <dump name>"
+			echo "dump list"
+			echo "dump help"
+			return
+		fi
+
+		if [ "$1" == "list" ]; then
+			ls /home/me/dumps
+			return
+		fi
+
+		if [ "$2" != "" ]; then
+			dbName="$2"
+		else
+			echo "ERROR: You must specify a database name" 
+		fi
+
+		if [ "$3" != "" ]; then
+			dumpName="/home/me/dumps/${3}.sql"
+		else
+			echo "ERROR: You must specify a dump name" 
+		fi
+
+		if [ "$1" == "export" ]; then
+			mysqldump -u root -p ${dbName} > ${dumpName}
+		elif [ "$1" == "import" ]; then
+			mysql -u root -p ${dbName} < ${dumpName}
+		fi
+}
+
+IJ_CLONE_PATH=/home/me/dev/projects/liferay-intellij
+BUNDLES_HOME=/home/me/dev/projects/bundles
+TOMCAT_HOME=${BUNDLES_HOME}/liferay-portal/tomcat-9.0.73
+ij() {
+	emulate -LR bash
+        ${IJ_CLONE_PATH}/intellij_libsources "$@"
+}
+
+# MCD_RD_CLONE_PATH=/home/me/dev/projects/liferay-faster-deploy
+
+# cd() {
+# 	emulate -LR bash
+# 		. $MCD_RD_CLONE_PATH/gitcd/gitcd $@
+# }
+
+function customize_path {
+	emulate -LR bash
+			export ANT_HOME="/opt/java/ant"
+			export ANT_OPTS="-Xmx6144m"
+
+			export GRADLE_OPTS=${ANT_OPTS}
+
+			if [ -z ${JAVA_HOME+x} ]
+			then
+				export JAVA_HOME="/opt/java/jdk"
+			fi
+
+			export NPM_CONFIG_PREFIX=~/.npm-global
+
+			export PATH="${ANT_HOME}/bin:${JAVA_HOME}/bin:${NPM_CONFIG_PREFIX}/bin:/opt/java/maven/bin:${PATH}"
+}
+
+function execute_gradlew {
+	emulate -LR bash
+			if [ -e ../gradlew ]
+			then
+				../gradlew ${@}
+			elif [ -e ../../gradlew ]
+			then
+				../../gradlew ${@}
+			elif [ -e ../../../gradlew ]
+			then
+				../../../gradlew ${@}
+			elif [ -e ../../../../gradlew ]
+			then
+				../../../../gradlew ${@}
+			elif [ -e ../../../../../gradlew ]
+			then
+				../../../../../gradlew ${@}
+			elif [ -e ../../../../../../gradlew ]
+			then
+				../../../../../../gradlew ${@}
+			elif [ -e ../../../../../../../gradlew ]
+			then
+				../../../../../../../gradlew ${@}
+			elif [ -e ../../../../../../../../gradlew ]
+			then
+				../../../../../../../../gradlew ${@}
+			elif [ -e ../../../../../../../../../gradlew ]
+			then
+				../../../../../../../../../gradlew ${@}
+			else
+				echo "Unable to find locate Gradle wrapper."
+			fi
+}
+
+function git_grep {
+	emulate -LR bash
+			if [ ${#} -eq 1 ]
+			then
+				git --no-pager grep --files-with-matches "${1}"
+			elif [ ${#} -eq 2 ]
+			then
+				git --no-pager grep --files-with-matches "${1}" -- "${2}"
+			elif [ ${#} -eq 3 ]
+			then
+				git --no-pager grep --files-with-matches "${1}" -- "${2}" "${3}"
+			elif [ ${#} -eq 4 ]
+			then
+				git --no-pager grep --files-with-matches "${1}" -- "${2}" "${3}" "${4}"
+			fi
+}
+
+function gw {
+	emulate -LR bash
+			execute_gradlew "${@//\//:}" --daemon
+}
+
+gw () {
+	emulate -LR bash
+			local root_level
+			root_level=$(git rev-parse --show-toplevel 2>/dev/null)
+			if [[ -n $root_level && -f "$root_level/gradlew" ]]
+			then
+				root_level="$root_level/gradlew"
+			else
+				root_level=$(command -v gradle)
+			fi
+			"$root_level" --console=rich "$@"
+}
+
+
+
+function parse_git_branch {
+	emulate -LR bash
+			GIT_DIR_NAME=$(git rev-parse --show-toplevel)
+
+			GIT_DIR_NAME=${GIT_DIR_NAME##*/}
+
+			if [[ "${GIT_DIR_NAME}" =~ -ee-[0-9][^\-]*$ ]]
+			then
+				echo "ee-${GIT_DIR_NAME##*-ee-}"
+			elif [[ "${GIT_DIR_NAME}" =~ -[0-9][^\-]*$ ]]
+			then
+				echo "${GIT_DIR_NAME##*-}"
+			elif [[ "${GIT_DIR_NAME}" =~ com-liferay-osb-asah-private$ ]]
+			then
+				echo "7.0.x"
+			elif [[ "${GIT_DIR_NAME}" =~ -private$ ]]
+			then
+				echo "${GIT_DIR_NAME}" | sed 's/.*-\([^\-]*\)-private$/\1-private/'
+			else
+				echo "master"
+			fi
+}
+
+function git_init() {
+	emulate -LR bash
+				if [ -z "$1" ]; then
+						printf "%s\n" "Please provide a directory name.";
+				else
+						mkdir "$1";
+						builtin cd "$1";
+						pwd;
+						git init;
+						touch readme.md .gitignore LICENSE;
+						echo "# $(basename $PWD)" >> readme.md
+				fi
+}
+
+function parse_git_current_branch {
+	emulate -LR bash
+			git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+function parse_git_current_branch_with_parantheses {
+	emulate -LR bash
+			parse_git_current_branch | sed 's/.*/(&)/'
+}
+
+function switch_to_java_7 {
+	emulate -LR bash
+	
+			export JAVA_HOME="/opt/java/jdk7"
+
+			export PATH="${JAVA_HOME}/bin:${PATH}"
+}
+
+function switch_to_java18 {
+  emulate -LR bash
+	export JAVA_HOME="/opt/java/jdk18"
+
+	export PATH="${JAVA_HOME}/bin:${PATH}"
+}
+
+customize_path
