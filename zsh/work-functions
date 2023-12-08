@@ -45,8 +45,6 @@ function cd_module() {
 		fi
 }
 
-#!/bin/bash
-
 # [BUNDLE CREATION - BRANCHES ONLY]
 # This function will create a bundle with the same name as the branch you are on
 # If you want to create a bundle with a custom name you can pass it as a parameter
@@ -90,6 +88,9 @@ run(){
 			else ./$tomcatfile/bin/catalina.sh jpda run; fi
 }
 
+# [SOLR]
+# This function will start solr with the version you choose
+# You can choose the version of the solr server and the version of the portal
 function s() {
 	emulate -LR bash
 			version="
@@ -320,6 +321,9 @@ dump() {
 		fi
 }
 
+# [WORKTREE ADD]
+# This function will add a worktree running ant setup-profile-dxp and ij
+# Example: worktreeAdd <branch name>
 worktreeAdd() {
 	emulate -LR bash
 
@@ -342,11 +346,9 @@ worktreeAdd() {
 		ij
 }
 
-helpAlias() {
-	emulate -LR bash
-		cat /home/me/zsh/work-functions | grep "() {"
-}
-
+# [WORKTREE REMOVE]
+# This function will remove a worktree and the bundle folder
+# Example: worktreeRemove <branch name>
 worktreeRemove() {
 	emulate -LR bash
 
@@ -362,7 +364,7 @@ worktreeRemove() {
 
 		git worktree remove /home/me/dev/projects/worktrees/$1
 
-		rm -rf /home/me/dev/projects/bundles/worktrees/$1
+		rm -rf /home/me/dev/projects/bundles/$1
 }
 
 IJ_CLONE_PATH=/home/me/dev/projects/liferay-intellij
@@ -379,6 +381,8 @@ ij() {
 # 		. $MCD_RD_CLONE_PATH/gitcd/gitcd $@
 # }
 
+# [Customize Path]
+# This function will customize the path
 function customize_path {
 	emulate -LR bash
 			export ANT_HOME="/opt/java/ant"
@@ -396,6 +400,8 @@ function customize_path {
 			export PATH="${ANT_HOME}/bin:${JAVA_HOME}/bin:${NPM_CONFIG_PREFIX}/bin:/opt/java/maven/bin:${PATH}"
 }
 
+# [Execute Gradlew]
+# This function will execute gradlew
 function execute_gradlew {
 	emulate -LR bash
 			if [ -e ../gradlew ]
@@ -430,6 +436,8 @@ function execute_gradlew {
 			fi
 }
 
+# [Git Grep]
+# This function will execute git grep
 function git_grep {
 	emulate -LR bash
 			if [ ${#} -eq 1 ]
@@ -447,6 +455,8 @@ function git_grep {
 			fi
 }
 
+# [gw]
+# This function will execute gradlew
 function gw {
 	emulate -LR bash
 			execute_gradlew "${@//\//:}" --daemon
@@ -465,11 +475,15 @@ gw () {
 			"$root_level" --console=rich "$@"
 }
 
+# [poshi]
+# This function will execute poshi
 function poshi() {
         APP_TEST="$1"
         ant -f build-test.xml run-selenium-test -Dtest.class=$APP_TEST
 }
 
+# [parse_git_branch]
+# This function will parse the git branch
 function parse_git_branch {
 	emulate -LR bash
 			GIT_DIR_NAME=$(git rev-parse --show-toplevel)
@@ -493,6 +507,8 @@ function parse_git_branch {
 			fi
 }
 
+# [git_init]
+# This function will initialize a git repository
 function git_init() {
 	emulate -LR bash
 				if [ -z "$1" ]; then
@@ -507,16 +523,22 @@ function git_init() {
 				fi
 }
 
+# [parse_git_current_branch]
+# This function will parse the git current branch
 function parse_git_current_branch {
 	emulate -LR bash
 			git rev-parse --abbrev-ref HEAD 2>/dev/null
 }
 
+# [parse_git_current_branch_with_parantheses]
+# This function will parse the git current branch with parantheses
 function parse_git_current_branch_with_parantheses {
 	emulate -LR bash
 			parse_git_current_branch | sed 's/.*/(&)/'
 }
 
+# [switch_to_java_7]
+# This function will switch to java 7
 function switch_to_java_7 {
 	emulate -LR bash
 	
@@ -525,11 +547,23 @@ function switch_to_java_7 {
 			export PATH="${JAVA_HOME}/bin:${PATH}"
 }
 
+# [switch_to_java_8]
+# This function will switch to java 8
 function switch_to_java18 {
   emulate -LR bash
 	export JAVA_HOME="/opt/java/jdk18"
 
 	export PATH="${JAVA_HOME}/bin:${PATH}"
 }
+
+function_help() {
+	emulate -LR bash
+    # Assuming the file with functions is 'functions.zsh'
+    local file="$ZSH_DIR/work-functions"
+
+    # Grep for lines that are comments just before a function definition
+    grep -Pzo '# \[.*\](\n# .*)*\n\w+\(\)' "$file" | tr '\0' '\n'
+}
+
 
 customize_path
