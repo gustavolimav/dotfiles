@@ -27,19 +27,23 @@ zstyle ':completion:*' cache-path ~/.zsh/cache
 zstyle ':completion:*' menu select
 zmodload zsh/complist
 
+ZSH_DIR="/home/me/dev/projects/dotfiles/zsh"
+
 # add scripts to path
 export PATH="$HOME/.local/bin:$HOME/bin:$HOME/.local/bin/scripts/:$HOME/.local/bin/statusbar/:$PATH"
 
 # Useful Functions
-source "$HOME/zsh/zsh-functions"
+source "$ZSH_DIR/zsh-functions"
 
 # Normal files to source
-zsh_add_file "$HOME/zsh/zsh-vim-mode"
-zsh_add_file "$HOME/zsh/zsh-aliases"
-zsh_add_file "$HOME/zsh/zsh-prompt"
-zsh_add_file "$HOME/zsh/exports"
-zsh_add_file "$HOME/zsh/work-functions"
-zsh_add_file "$HOME/zsh/work-aliases"
+zsh_add_file "$ZSH_DIR/zsh-vim-mode"
+zsh_add_file "$ZSH_DIR/zsh-aliases"
+zsh_add_file "$ZSH_DIR/zsh-prompt"
+zsh_add_file "$ZSH_DIR/exports"
+zsh_add_file "$ZSH_DIR/work-functions"
+zsh_add_file "$ZSH_DIR/work-aliases"
+zsh_add_file "$ZSH_DIR/personal-aliases"
+zsh_add_file "$ZSH_DIR/personal-functions"
 
 # Plugins
 zsh_add_plugin "zsh-users/zsh-autosuggestions"
@@ -94,4 +98,4 @@ bindkey -M visual '^[[P' vi-delete
 # History in cache directory:
 HISTSIZE=10000000
 SAVEHIST=10000000
-HISTFILE="/home/me/zsh/history"
+HISTFILE="$ZSH_DIR/history/history"

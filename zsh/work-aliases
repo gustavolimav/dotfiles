@@ -12,6 +12,7 @@ alias dmysqlserver="docker run --name galatians-mysql --rm -d -e MYSQL_ALLOW_EMP
 alias dpsqlclient="docker exec -it galatians-psql psql -U postgres"
 alias dpsqlserver="docker run --name galatians-psql --rm -d -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:13"
 
+alias run-vpn="sudo openvpn --config client.ovpn --auth-user-pass /home/me/vpn/pass.txt"
 alias g="git"
 alias gcp="git cherry-pick"
 alias grbi="git rebase -i"
@@ -21,6 +22,7 @@ alias gpr="~/dev/projects/git-tools/git-pull-request/git-pull-request.sh"
 
 alias la="ls -la --color=auto"
 alias la="ls --color=auto"
+alias intellij="~/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea.sh ."
 
 alias osub="/opt/sublime_text/sublime_text ${@}"
 
@@ -42,15 +44,12 @@ alias sf="gw formatSource"
 
 
 # Database
-# alias cdb="rm -rf ${TOMCAT_HOME}/work ${TOMCAT_HOME}/temp ${BUNDLES_HOME}/liferay-portal/data | /home/me/scripts/./cleandb.sh"
 alias expDump="/home/me/scripts/exportDump.sh"
 alias impDump="/home/me/scripts/importDump.sh"
 
 # Tomcat
-alias tom="ps -aux | grep tomcat"
-alias cata="${TOMCAT_HOME}/bin/./catalina.sh jpda run"
 alias cdt="cd ~/dev/projects/liferay-portal"
-alias cdtp="cd ${TOMCAT_HOME}/bin"
+alias cdBundles="${BUNDLES_HOME}"
 
 # Elasticsearch
 alias kibana="~/Downloads/kibana-oss-7.10.2-linux-x86_64/kibana-7.10.2-linux-x86_64/./bin/kibana"

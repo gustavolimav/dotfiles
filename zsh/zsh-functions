@@ -5,12 +5,12 @@ function zsh_add_file() {
 
 function zsh_add_plugin() {
     PLUGIN_NAME=$(echo $1 | cut -d "/" -f 2)
-    if [ -d "$HOME/plugins/$PLUGIN_NAME" ]; then 
+    if [ -d "$ZSH_DIR/../plugins/$PLUGIN_NAME" ]; then 
         # For plugins
-        zsh_add_file "$HOME/plugins/$PLUGIN_NAME/$PLUGIN_NAME.plugin.zsh" || \
-        zsh_add_file "$HOME/plugins/$PLUGIN_NAME/$PLUGIN_NAME.zsh"
+        zsh_add_file "$ZSH_DIR/../plugins/$PLUGIN_NAME/$PLUGIN_NAME.plugin.zsh" || \
+        zsh_add_file "$ZSH_DIR/../plugins/$PLUGIN_NAME/$PLUGIN_NAME.zsh"
     else
-        git clone "https://github.com/$1.git" "$HOME/plugins/$PLUGIN_NAME"
+        git clone "https://github.com/$1.git" "$HOME/../plugins/$PLUGIN_NAME"
     fi
 }
 
