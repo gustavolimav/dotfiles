@@ -25,6 +25,7 @@ alias gpr="~/dev/projects/git-tools/git-pull-request/git-pull-request.sh"
 # Directory commands
 
 alias cdm="cd_module"
+alias cdwt="cd ~/dev/projects/worktrees"
 alias cdt="cd ~/dev/projects/liferay-portal"
 alias cdp="cd ~/dev/projects"
 alias cdBundles="${BUNDLES_HOME}"
@@ -40,6 +41,7 @@ alias gwt='gw test --tests'
 alias gwbr='gw buildREST'
 alias gwbs='gw bS'
 alias sf="gw formatSource"
+alias ijdxp= "setUpLiferayDXP_Intellij"
 
 # General utility commands
 

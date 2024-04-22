@@ -76,6 +76,15 @@ function customize_path {
 			export PATH="${ANT_HOME}/bin:${JAVA_HOME}/bin:${NPM_CONFIG_PREFIX}/bin:/opt/java/maven/bin:${PATH}"
 }
 
+# [Setup Liferay DXP]
+# This function will setup Liferay DXP
+setUpLiferayDXP_Intellij() {
+	emulate -LR bash
+		ant setup-profile-dxp
+
+		ij
+}
+
 # [Execute Gradlew]
 # This function will execute gradlew
 function execute_gradlew {
