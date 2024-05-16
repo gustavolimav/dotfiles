@@ -4,6 +4,7 @@ alias acc="ant clean compile"
 alias ad="ant deploy"
 alias af="ant format-source"
 alias afcb="ant format-source-current-branch"
+alias baselineKernel="ant -Dbaseline.jar.report.level=persist clean jar"
 
 # Docker commands
 
@@ -28,7 +29,7 @@ alias cdm="cd_module"
 alias cdwt="cd ~/dev/projects/worktrees"
 alias cdt="cd ~/dev/projects/liferay-portal"
 alias cdp="cd ~/dev/projects"
-alias cdBundles="${BUNDLES_HOME}"
+alias cdbh="${BUNDLES_HOME}"
 
 # Liferay developer commands
 
