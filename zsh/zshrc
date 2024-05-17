@@ -33,14 +33,10 @@ ZSH_DIR=$(dirname $0)
 export PATH="$HOME/.local/bin:$HOME/bin:$HOME/.local/bin/scripts/:$HOME/.local/bin/statusbar/:$PATH"
 
 # Useful Functions
-source "$ZSH_DIR/functions/zsh-util.sh"
+source "$ZSH_DIR/functions/zsh/zsh-util.sh"
 
 # Normal files to source
-zsh_add_file "$ZSH_DIR/custom/zsh-vim-mode.sh"
-zsh_add_file "$ZSH_DIR/custom/zsh-prompt.sh"
-zsh_add_file "$ZSH_DIR/functions/run.sh"
-zsh_add_file "$ZSH_DIR/aliases/work.sh"
-zsh_add_file "$ZSH_DIR/aliases/zsh.sh"
+zsh_add_file "$ZSH_DIR/custom.sh"
 
 # Plugins
 zsh_add_plugin "zsh-users/zsh-autosuggestions"
