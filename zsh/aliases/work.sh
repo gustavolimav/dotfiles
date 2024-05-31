@@ -22,6 +22,7 @@ alias grbi="git rebase -i"
 alias gi="gpr info"
 alias gg="git_grep"
 alias gpr="~/dev/projects/git-tools/git-pull-request/git-pull-request.sh"
+alias ghome="git_home"
 
 # Directory commands
 

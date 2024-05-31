@@ -23,6 +23,16 @@ function parse_git_branch {
 			fi
 }
 
+function git_home() {
+    local git_root
+    git_root=$(git rev-parse --show-toplevel 2> /dev/null)
+    if [[ -z "$git_root" ]]; then
+        echo "Not a git repository."
+    else
+        cd "$git_root" || return
+    fi
+}
+
 # [Git Grep]
 # This function will execute git grep
 function git_grep {
