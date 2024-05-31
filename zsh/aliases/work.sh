@@ -50,7 +50,6 @@ alias ijdxp= "setUpLiferayDXP_Intellij"
 alias run-vpn="sudo openvpn --config client.ovpn --auth-user-pass /home/me/vpn/pass.txt"
 alias la="ls -la --color=auto"
 alias la="ls --color=auto"  # Note: This alias overrides the previous 'la' alias
-alias intellij="~/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea.sh ."
 alias osub="/opt/sublime_text/sublime_text ${@}"
 alias lockscreen="xscreensaver-command --lock"
 alias fakesmtp="cd /home/me/projects/fake-smtp/fakeSMTP-latest && java -jar fakeSMTP-2.0.jar"

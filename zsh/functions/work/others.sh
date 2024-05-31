@@ -50,6 +50,13 @@ ij() {
         ${IJ_CLONE_PATH}/intellij_libsources "$@"
 }
 
+intellij() {
+	emulate -LR bash
+		ghome
+		
+		~/.local/share/JetBrains/Toolbox/apps/intellij-idea-ultimate/bin/idea.sh .
+}
+
 # MCD_RD_CLONE_PATH=/home/me/dev/projects/liferay-faster-deploy
 
 # cd() {
