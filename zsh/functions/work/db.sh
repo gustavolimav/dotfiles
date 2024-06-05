@@ -78,6 +78,16 @@ createDB() {
 
 }
 
+# [LIST DB]
+# This function will list all the databases
+# Example: listDB
+listDB() {
+    emulate -LR bash
+    password="L1f3ray#"
+
+    mysql -u root -p$password -e "SHOW DATABASES;"
+}
+
 # [DUMP DB]
 # Function to export or import a database
 # Example: dump <import/export> <database name> <dump name>
