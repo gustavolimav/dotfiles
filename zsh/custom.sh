@@ -1,5 +1,5 @@
-zsh_add_file "$ZSH_DIR/custom/zsh-vim-mode.sh"
-zsh_add_file "$ZSH_DIR/custom/zsh-prompt.sh"
+zsh_add_file "$ZSH_DIR/zsh_customization/zsh-vim-mode.sh"
+zsh_add_file "$ZSH_DIR/zsh_customization/zsh-prompt.sh"
 zsh_add_file "$ZSH_DIR/aliases/work.sh"
 zsh_add_file "$ZSH_DIR/aliases/zsh.sh"
 zsh_add_file "$ZSH_DIR/functions/work/bundles.sh"
