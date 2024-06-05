@@ -27,7 +27,6 @@ alias ghome="git_home"
 # Directory commands
 
 alias cdm="cd_module"
-alias cdwt="cd ~/dev/projects/worktrees"
 alias cdt="cd ~/dev/projects/liferay-portal"
 alias cdp="cd ~/dev/projects"
 alias cdbh="${BUNDLES_HOME}"
@@ -43,11 +42,9 @@ alias gwt='gw test --tests'
 alias gwbr='gw buildREST'
 alias gwbs='gw bS'
 alias sf="gw formatSource"
-alias ijdxp= "setUpLiferayDXP_Intellij"
 
 # General utility commands
 
-alias run-vpn="sudo openvpn --config client.ovpn --auth-user-pass /home/me/vpn/pass.txt"
 alias la="ls -la --color=auto"
 alias la="ls --color=auto"  # Note: This alias overrides the previous 'la' alias
 alias osub="/opt/sublime_text/sublime_text ${@}"
