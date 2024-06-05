@@ -102,7 +102,7 @@ setprop(){
 				echo "Aupgrade.database.auto.run=true" >> portal-setup-wizard.properties
 				echo "database.indexes.update.on.startup=true" >> portal-setup-wizard.properties
 				echo "jdbc.default.driverClassName=com.mysql.cj.jdbc.Driver" >> portal-setup-wizard.properties
-				echo "jdbc.default.password=L1f3ray#" >> portal-setup-wizard.properties
+				echo "jdbc.default.password=$DB_PASSWORD" >> portal-setup-wizard.properties
 				echo "jdbc.default.username=root" >> portal-setup-wizard.properties
 
 				# Get the current directory path
