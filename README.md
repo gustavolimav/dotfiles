@@ -33,6 +33,7 @@ This repository contains configuration files for setting up your development env
    Replace the content of your `.zshrc` file with the following lines:
 
    ```bash
+   export DB_PASSWORD="PASSWORD"
    source "/path/to/dotfiles/zsh/zshrc"
 
    export NVM_DIR="$HOME/.nvm"
