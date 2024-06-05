@@ -33,7 +33,7 @@ ZSH_DIR=$(dirname $0)
 export PATH="$HOME/.local/bin:$HOME/bin:$HOME/.local/bin/scripts/:$HOME/.local/bin/statusbar/:$PATH"
 
 # Useful Functions
-source "$ZSH_DIR/functions/zsh/zsh-util.sh"
+source "$ZSH_DIR/zsh_customization/zsh-util.sh"
 
 # Normal files to source
 zsh_add_file "$ZSH_DIR/custom.sh"
