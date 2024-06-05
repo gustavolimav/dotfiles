@@ -128,12 +128,12 @@ function execute_gradlew {
 			fi
 }
 
-# [gw]
-# This function will execute gradlew
-function gw {
-	emulate -LR bash
-			execute_gradlew "${@//\//:}" --daemon
-}
+# # [gw]
+# # This function will execute gradlew
+# function gw {
+# 	emulate -LR bash
+# 			execute_gradlew "${@//\//:}" --daemon
+# }
 
 gw () {
 	emulate -LR bash
