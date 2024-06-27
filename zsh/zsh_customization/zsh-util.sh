@@ -5,6 +5,7 @@ function zsh_add_file() {
 
 function zsh_add_plugin() {
     PLUGIN_NAME=$(echo $1 | cut -d "/" -f 2)
+    echo $PLUGIN_NAME
     if [ -d "$ZSH_DIR/../plugins/$PLUGIN_NAME" ]; then 
         # For plugins
         zsh_add_file "$ZSH_DIR/../plugins/$PLUGIN_NAME/$PLUGIN_NAME.plugin.zsh" || \

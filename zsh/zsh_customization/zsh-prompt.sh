@@ -1,24 +1,28 @@
+# Autoload functions
 autoload -Uz vcs_info
 autoload -Uz add-zsh-hook
 
+# Enable git for vcs_info
+# zstyle ':vcs_info:*' enable git
+
 # Function to update VCS info asynchronously
 update_vcs_info() {
-    vcs_info
-    zle && zle .reset-prompt
+    echo "update_vcs_info called"
+    vcs_info || echo "vcs_info failed"
+    zle && zle .reset-prompt || echo "zle reset-prompt failed"
 }
 
-# Register the precmd hook
-add-zsh-hook precmd update_vcs_info
-
 # Customize the VCS information
-zstyle ':vcs_info:git:*' formats '%F{yellow}%b%f%F{red}%c%f%F{green}%u%f '
-zstyle ':vcs_info:git:*' actionformats '%F{yellow}%b|%a%f '
+# zstyle ':vcs_info:git:*' formats '%F{yellow}%b%f%F{red}%c%f%F{green}%u%f '
+# zstyle ':vcs_info:git:*' actionformats '%F{yellow}%b|%a%f '
 
 # Command execution time
 TIMER=0
 preexec() {
+    echo "preexec called"
     TIMER=$SECONDS
 }
+
 precmd() {
     if [[ $TIMER -gt 0 ]]; then
         ELAPSED_TIME=$(($SECONDS - $TIMER))
@@ -28,8 +32,15 @@ precmd() {
     fi
 }
 
+echo "aqui"
+
+# Register hooks
+add-zsh-hook preexec preexec
+add-zsh-hook precmd update_vcs_info
+add-zsh-hook precmd precmd
+
 # Return status of the last executed command
-return_status() {
+function return_status() {
     if [ $? -eq 0 ]; then
         echo "%F{green}✔%f"
     else
@@ -38,7 +49,7 @@ return_status() {
 }
 
 # Shorten directory path
-prompt_dir() {
+function prompt_dir() {
     echo "%F{cyan}%3~%f"
 }
 
@@ -46,3 +57,6 @@ prompt_dir() {
 setopt PROMPT_SUBST
 PROMPT='%F{magenta}%n@%m%f %B%F{blue}%T%f%b $(prompt_dir) $(return_status) ${vcs_info_msg_0_} ${TIMER_FORMAT}
 %# '
+
+# Initialize vcs_info
+vcs_info
