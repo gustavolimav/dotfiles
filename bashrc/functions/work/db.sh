@@ -1,7 +1,195 @@
+#MARIADB
+
+export MARIADB_ROOT_PASSWORD='my-secret-pw'
+export MARIADB_CONFIG_PATH='~/mariadb-config'
+
+tldr_mariadb() {
+    echo "start_mariadb_container <container_name>"
+    echo "copy_dump_to_container_mariadb <dump_file_path>"
+    echo "create_database_mariadb <database_name>"
+    echo "import_dump_mariadb <database_name>"
+    echo "import_to_database_mariadb <dump_file_path> <database_name>"
+}
+
+start_mariadb_container() {
+    docker run --name mariadb-container -v $MARIADB_CONFIG_PATH/my.cnf:/etc/mysql/conf.d/my.cnf -p 3306:3306 -e MYSQL_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD -d mariadb
+}
+
+copy_dump_to_container_mariadb() {
+    local dump_file_path=$1
+
+    if [ "$1" == "--help" ]; then
+        echo "Usage: copy_dump_to_container_mariadb <dump_file_path> <container_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <dump_file_path>   Path to the SQL dump file to be copied"
+        echo "  <container_name>   Name of the Docker container running MySQL"
+        return
+    fi
+
+    if [ "$1" == "" ]; then
+        echo "ERROR: Must specify the path to the SQL dump file to be copied"
+        return
+    fi
+
+    docker cp "$dump_file_path" mariadb-container:/dump.sql
+}
+
+create_database_mariadb() {
+    local database_name=$1
+
+    if [ "$1" == "--help" ]; then
+        echo "Usage: create_database_mariadb <database_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <database_name>    Name of the database to create"
+        return
+    fi
+
+    if [ "$1" == "" ]; then
+        echo "ERROR: Must specify the name of the database to create"
+        return
+    fi
+
+    docker exec -i mariadb-container mariadb -u root -p"$MARIADB_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $database_name CHARACTER SET utf8 COLLATE utf8_general_ci;"
+}
+
+import_dump_mariadb() {
+    local database_name=$1
+
+     if [ "$1" == "--help" ]; then
+        echo "Usage: import_dump_mariadb <database_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <database_name>    Name of the database to import the dump into"
+        return
+    fi
+
+    if [ "$1" == "" ]; then
+        echo "ERROR: Must specify the name of the database to import the dump into"
+        return
+    fi
+
+    docker exec -i mariadb-container mariadb -u root -p"$MARIADB_ROOT_PASSWORD" "$database_name" < /dump.sql
+}
+
+import_to_database_mariadb() {
+    local dump_file_path=$1
+    local database_name=$2
+
+    if [ "$1" == "--help" ]; then
+        echo "Usage: import_to_database_mysql <dump_file_path> <database_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <dump_file_path>   Path to the SQL dump file to be imported"
+        echo "  <database_name>    Name of the database to import the dump into"
+        return
+    fi
+
+    if [ "$1" == "" ]; then
+        echo "ERROR: Must specify the path to the SQL dump file to be imported"
+        return
+    fi
+
+    if [ "$2" == "" ]; then
+        echo "ERROR: Must specify the name of the database to import the dump into"
+        return
+    fi
+
+    copy_dump_to_container_mariadb "$dump_file_path"
+    create_database_mariadb "$database_name"
+    import_dump_mariadb "$database_name"
+}
+
+list_db_mariadb() {
+    docker exec -i mariadb-container mariadb -u root -p"$MYSQL_ROOT_PASSWORD" -e "SHOW DATABASES;"
+}
+
+# MYSQL
+
+export MYSQL_ROOT_PASSWORD='my-secret-pw'
+export MYSQL_CONFIG_PATH='~/mysql-config'
+
+tldr_mysql() {
+    echo "start_mysql_container"
+    echo "copy_dump_to_container_mysql <dump_file_path>"
+    echo "create_database_mysql <database_name>"
+    echo "import_dump_mysql <database_name>"
+    echo "import_to_database_mysql <dump_file_path> <database_name>"
+}
+
+start_mysql_container() {
+    docker run --name mysql-container -v "$MYSQL_CONFIG_PATH/my.cnf:/etc/mysql/conf.d/my.cnf" -p 3306:3306 -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" -d mysql
+}
+
+copy_dump_to_container_mysql() {
+    local dump_file_path=$1
+
+    if [ "$1" == "--help" ]; then
+        echo "Usage: copy_dump_to_container_mysql <dump_file_path>"
+        echo ""
+        echo "Arguments:"
+        echo "  <dump_file_path>   Path to the SQL dump file to be copied"
+        return
+    fi
+
+    docker cp "$dump_file_path" mysql-container:/dump.sql
+}
+
+create_database_mysql() {
+    local database_name=$1
+
+    if [ "$1" == "--help" ]; then
+        echo "Usage: create_database_mysql <database_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <database_name>    Name of the database to create"
+        return
+    fi
+
+    docker exec -i mysql-container mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $database_name;"
+}
+
+import_dump_mysql() {
+    local database_name=$1
+
+    if [ "$1" == "--help" ]; then
+        echo "Usage: import_dump_mysql <database_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <database_name>    Name of the database to import the dump into"
+        return
+    fi
+
+    docker exec -i mysql-container mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$database_name" < /dump.sql
+}
+
+import_to_database_mysql() {
+    local dump_file_path=$1
+    local database_name=$2
+
+     if [ "$1" == "--help" ]; then
+        echo "Usage: import_to_database_mysql <dump_file_path> <database_name>"
+        echo ""
+        echo "Arguments:"
+        echo "  <dump_file_path>   Path to the SQL dump file to be imported"
+        echo "  <database_name>    Name of the database to import the dump into"
+        return
+    fi
+
+    copy_dump_to_container_mysql "$dump_file_path"
+    create_database_mysql "$database_name"
+    import_dump_mysql "$database_name"
+}
+
+list_db_mysql() {
+    docker exec -i mysql-container mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SHOW DATABASES;"
+}
+
 # [CLEAN DB]
 # This function will clean the database
 # Example: cdb <database name>
-cdb() {
+cdb_mysql() {
 
 	if [ "$1" == "" ]; then
 		echo "ERROR: You must specify a database name (help / <database name>)" 
@@ -16,110 +204,11 @@ cdb() {
 	if [ "$1" == "" ]; then
 		echo "cdb <database name>"
 		return
-	else
-		name="$1"
-
-		dropDB $name
-
-		createDB $name
-	 fi
-}
-
-dropDB() {
-
-	if [ "$1" == "" ]; then
-		echo "ERROR: You must specify a database name (help / <database name>)" 
-		return
-	fi
-
-	if [ "$1" == "help" ]; then
-		echo "dropDB <database name>"
-		return
-	fi
-
-	if [ "$1" == "" ]; then
-		echo "dropDB <database name>"
-		return
-	else
+    else
 		name="$1"
 
 		mysql -u root -p$DB_PASSWORD -e "DROP DATABASE ${name}"
-	fi
-}
-
-createDB() {
-
-	if [ "$1" == "" ]; then
-		echo "ERROR: You must specify a database name (help / <database name>)" 
-		return
-	fi
-
-	if [ "$1" == "help" ]; then
-		echo "createDB <database name>"
-		return
-	fi
-
-	if [ "$1" == "" ]; then
-		echo "createDB <database name>"
-		return
-	else
-		name="$1"
 
 		mysql -u root -p$DB_PASSWORD -e "CREATE DATABASE ${name} character set UTF8 collate utf8_general_ci;"
-	fi
-}
-
-# [LIST DB]
-# This function will list all the databases
-# Example: listDB
-listDB() {
-
-    mysql -u root -p$DB_PASSWORD -e "SHOW DATABASES;"
-}
-
-# [DUMP DB]
-# Function to export or import a database
-# Example: dump <import/export> <database name> <dump name>
-dump() {
-	if [ "$1" == "" ]; then
-		echo "ERROR: You must specify an action (import / export / help / list / clear)" 
-		return
-	fi
-
-	if [ "$1" == "help" ]; then
-		echo "dump import <database name> <dump name>"
-		echo "dump export <database name> <dump name>"
-		echo "dump list"
-		echo "dump help"
-		echo "dump clear"
-		return
-	fi
-
-	if [ "$1" == "list" ]; then
-		ls /home/me/dumps
-		return
-	fi
-
-	if [ "$1" == "clear" ]; then
-		rm -rf /home/me/dumps/*
-		return
-	fi
-
-	if [ "$2" != "" ]; then
-		dbName="$2"
-	else
-		echo "ERROR: You must specify a database name" 
-	fi
-
-	if [ "$3" != "" ]; then
-		dumpName="/home/me/dumps/${3}.sql"
-	else
-		echo "ERROR: You must specify a dump name" 
-	fi
-
-	if [ "$1" == "export" ]; then
-		mysqldump -u root -p$DB_PASSWORD ${dbName} > ${dumpName}
-	elif [ "$1" == "import" ]; then
-		mysql -u root -p$DB_PASSWORD ${dbName} < ${dumpName}
-	fi
+	 fi
 }
