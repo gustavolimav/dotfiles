@@ -83,8 +83,7 @@ function createBranch() {
 	branchTitle=$3
 
 	if [ "$1" == "help" ] || [ "$1" == "" ]; then
-		echo -e "${GREEN}gcb${NC}"
-		echo -e "${YELLOW}Usage:${NC} /bin/bash <ticketCode> <typeOfTicket> <branchTitle>"
+		echo -e "${YELLOW}Usage:${NC} createBranch <ticketCode> <typeOfTicket> <branchTitle>"
 		echo
 		echo -e "${YELLOW}Arguments:${NC}"
 		echo -e "  ${BLUE}ticketCode${NC}     The ticket code, e.g., LPD-31099"
@@ -92,7 +91,7 @@ function createBranch() {
 		echo -e "  ${BLUE}branchTitle${NC}    The title of the branch, e.g., 'terms filter'. Words will be split by '_' and converted to uppercase."
 		echo
 		echo -e "${YELLOW}Example:${NC}"
-		echo -e "  /bin/bash LPD-31099 \"test fix\" \"terms filter\""
+		echo -e "  createBranch LPD-31099 \"test fix\" \"terms filter\""
 		echo -e "  This will create a branch named: YYYY_DD_MM_TEST_FIX_LPD-31099_TERMS_FILTER"
 		return
 	fi
