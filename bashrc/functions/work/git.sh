@@ -82,7 +82,7 @@ function createBranch() {
 	typeOfTicket=$2
 	branchTitle=$3
 
-	if [ "$1" == "--help" ]; then
+	if [ "$1" == "help" ]; then
 		echo "Usage: $0 <ticketCode> <typeOfTicket> <branchTitle>"
 		echo
 		echo "Arguments:"
