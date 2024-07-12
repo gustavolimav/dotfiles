@@ -26,6 +26,7 @@ function customize_aliases {
 	alias gpr="~/dev/projects/git-tools/git-pull-request/git-pull-request.sh"
 	alias gfpr="git_fetch_pr ${1}"
 	alias ghome="git_home"
+	alias gcb="createBranch"
 
 	# Directory commands
 

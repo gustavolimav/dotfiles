@@ -76,3 +76,38 @@ function parse_git_current_branch {
 function parse_git_current_branch_with_parantheses {
 	parse_git_current_branch | sed 's/.*/(&)/'
 }
+
+function createBranch() {
+	ticketCode=$1
+	typeOfTicket=$2
+	branchTitle=$3
+
+	if [ "$1" == "--help" ]; then
+		echo "Usage: $0 <ticketCode> <typeOfTicket> <branchTitle>"
+		echo
+		echo "Arguments:"
+		echo "  ticketCode     The ticket code, e.g., LPD-31099"
+		echo "  typeOfTicket   The type of the ticket, e.g., 'test fix'. Words will be split by '_' and converted to uppercase."
+		echo "  branchTitle    The title of the branch, e.g., 'terms filter'. Words will be split by '_' and converted to uppercase."
+		echo
+		echo "Example:"
+		echo "  $0 LPD-31099 \"test fix\" \"terms filter\""
+		echo "  This will create a branch named: YYYY_DD_MM_TEST_FIX_LPD-31099_TERMS_FILTER"
+		return
+	fi
+
+	# Get current date
+	year=$(date +"%Y")
+	day=$(date +"%d")
+	month=$(date +"%m")
+
+	# Convert typeOfTicket and branchTitle to uppercase and replace spaces with underscores
+	typeOfTicketFormatted=$(echo "$typeOfTicket" | tr ' ' '_' | tr '[:lower:]' '[:upper:]')
+	branchTitleFormatted=$(echo "$branchTitle" | tr ' ' '_' | tr '[:lower:]' '[:upper:]')
+
+	# Construct branch name
+	branchName="${year}_${day}_${month}_${typeOfTicketFormatted}_${ticketCode}_${branchTitleFormatted}"
+
+	# Create the branch
+	git checkout -b "$branchName"
+}
