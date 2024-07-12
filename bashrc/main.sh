@@ -1,4 +1,4 @@
-BASH_DIR=/home/me/dev/projects/dotfiles/bashrc
+BASH_DIR=$(pwd)/bashrc
 
 source "$BASH_DIR/functions/work/customize_path.sh" # Load properties first
 source "$BASH_DIR/functions/work/customize_alias.sh" # Load aliases
@@ -11,8 +11,11 @@ source "$BASH_DIR/functions/work/solr.sh" # Load functions related to Solr
 source "$BASH_DIR/functions/work/opensearch.sh" # Load functions related to OpenSearch
 
 source ~/.local/share/blesh/ble.sh
+shopt -s autocd
 
 unset NPM_CONFIG_PREFIX # Adding this so I can use NVM
 
 customize_path
 customize_aliases
+customize_prompt
+include_custom_bashrc

@@ -1,5 +1,3 @@
-# [parse_git_branch]
-# This function will parse the git branch
 function parse_git_branch {
 	emulate -LR bash
 			GIT_DIR_NAME=$(git rev-parse --show-toplevel)
