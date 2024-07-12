@@ -23,6 +23,12 @@ function customize_path {
     export BUNDLES_HOME=/home/me/dev/bundles
     export PROPERTIES_FILE_PATH=/home/$USER/dev/projects/properties
     export MARIADB_PASSWORD=L1f3ray
+
+	export RED='\033[0;31m'
+	export GREEN='\033[0;32m'
+	export YELLOW='\033[1;33m'
+	export BLUE='\033[1;34m'
+	export NC='\033[0m' # No Color
 }
 
 customize_path

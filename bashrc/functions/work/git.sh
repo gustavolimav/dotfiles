@@ -83,16 +83,17 @@ function createBranch() {
 	branchTitle=$3
 
 	if [ "$1" == "help" ] || [ "$1" == "" ]; then
-		echo "Usage: $0 <ticketCode> <typeOfTicket> <branchTitle>"
+		echo -e "${GREEN}gcb${NC}"
+		echo -e "${YELLOW}Usage:${NC} /bin/bash <ticketCode> <typeOfTicket> <branchTitle>"
 		echo
-		echo "Arguments:"
-		echo "  ticketCode     The ticket code, e.g., LPD-31099"
-		echo "  typeOfTicket   The type of the ticket, e.g., 'test fix'. Words will be split by '_' and converted to uppercase."
-		echo "  branchTitle    The title of the branch, e.g., 'terms filter'. Words will be split by '_' and converted to uppercase."
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}ticketCode${NC}     The ticket code, e.g., LPD-31099"
+		echo -e "  ${BLUE}typeOfTicket${NC}   The type of the ticket, e.g., 'test fix'. Words will be split by '_' and converted to uppercase."
+		echo -e "  ${BLUE}branchTitle${NC}    The title of the branch, e.g., 'terms filter'. Words will be split by '_' and converted to uppercase."
 		echo
-		echo "Example:"
-		echo "  $0 LPD-31099 \"test fix\" \"terms filter\""
-		echo "  This will create a branch named: YYYY_DD_MM_TEST_FIX_LPD-31099_TERMS_FILTER"
+		echo -e "${YELLOW}Example:${NC}"
+		echo -e "  /bin/bash LPD-31099 \"test fix\" \"terms filter\""
+		echo -e "  This will create a branch named: YYYY_DD_MM_TEST_FIX_LPD-31099_TERMS_FILTER"
 		return
 	fi
 
