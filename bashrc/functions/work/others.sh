@@ -1,5 +1,3 @@
-# [CD MODULE]
-# This function will cd to the module you select
 function cd_module() {
 	local git_dir="$(git rev-parse --show-toplevel)"
 
@@ -195,5 +193,3 @@ function poshi() {
 	APP_TEST="$1"
 	ant -f build-test.xml run-selenium-test -Dtest.class=$APP_TEST
 }
-
-customize_path

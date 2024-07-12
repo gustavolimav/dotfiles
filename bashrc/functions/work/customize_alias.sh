@@ -81,5 +81,3 @@ function customize_aliases {
 	# playwright
 	alias pw="npm run playwright -- test -g"
 }
-
-customize_aliases

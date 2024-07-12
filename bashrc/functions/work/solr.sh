@@ -1,6 +1,3 @@
-# [SOLR]
-# This function will start solr with the version you choose
-# You can choose the version of the solr server and the version of the portal
 function solr() {
 	version="
 	master-8.6.2
@@ -31,9 +28,6 @@ function solr() {
 	done
 }
 
-# [START SOLR]
-# This function will start solr with the version you choose
-# You can choose the version of the solr server and the version of the portal
 function start-solr() {
 	solrServerSuffix="$1"
 	portNumber="$2"

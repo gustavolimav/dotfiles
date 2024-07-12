@@ -1,5 +1,3 @@
-# [parse_git_branch]
-# This function will parse the git branch
 function parse_git_branch {
 			GIT_DIR_NAME=$(git rev-parse --show-toplevel)
 
@@ -32,8 +30,6 @@ function git_home() {
     fi
 }
 
-# [Git Grep]
-# This function will execute git grep
 function git_grep {
 	if [ ${#} -eq 1 ]
 	then
@@ -50,8 +46,6 @@ function git_grep {
 	fi
 }
 
-# [git_init]
-# This function will initialize a git repository
 function git_init() {
 	if [ -z "$1" ]; then
 			printf "%s\n" "Please provide a directory name.";
@@ -65,14 +59,10 @@ function git_init() {
 	fi
 }
 
-# [parse_git_current_branch]
-# This function will parse the git current branch
 function parse_git_current_branch {
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 }
 
-# [parse_git_current_branch_with_parantheses]
-# This function will parse the git current branch with parantheses
 function parse_git_current_branch_with_parantheses {
 	parse_git_current_branch | sed 's/.*/(&)/'
 }

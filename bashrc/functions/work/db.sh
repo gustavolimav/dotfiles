@@ -4,6 +4,8 @@
 
 export MARIADB_ROOT_PASSWORD='my-secret-pw'
 export MARIADB_CONFIG_PATH='~/mariadb-config'
+export MYSQL_ROOT_PASSWORD='my-secret-pw'
+export MYSQL_CONFIG_PATH='~/mysql-config'
 
 start_mariadb_container() {
     docker run --name mariadb-container -v $MARIADB_CONFIG_PATH/my.cnf:/etc/mysql/conf.d/my.cnf -p 3306:3306 -e MYSQL_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD -d mariadb
@@ -75,9 +77,6 @@ list_db_mariadb() {
 }
 
 # MYSQL
-
-export MYSQL_ROOT_PASSWORD='my-secret-pw'
-export MYSQL_CONFIG_PATH='~/mysql-config'
 
 start_mysql_container() {
     docker run --name mysql-container -v "$MYSQL_CONFIG_PATH/my.cnf:/etc/mysql/conf.d/my.cnf" -p 3306:3306 -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" -d mysql

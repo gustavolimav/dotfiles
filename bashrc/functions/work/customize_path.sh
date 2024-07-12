@@ -30,5 +30,3 @@ function customize_path {
 	export BLUE='\033[1;34m'
 	export NC='\033[0m' # No Color
 }
-
-customize_path
