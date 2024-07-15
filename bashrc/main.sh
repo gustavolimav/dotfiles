@@ -1,4 +1,6 @@
-BASH_DIR=$(pwd)/bashrc
+#!/bin/bash
+
+BASH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$BASH_DIR/functions/work/customize_path.sh" # Load properties first
 source "$BASH_DIR/functions/work/customize_alias.sh" # Load aliases
