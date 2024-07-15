@@ -22,7 +22,6 @@ function customize_path {
     export IJ_CLONE_PATH=/home/me/dev/projects/liferay-intellij
     export BUNDLES_HOME=/home/me/dev/bundles
     export PROPERTIES_FILE_PATH=/home/$USER/dev/projects/properties
-    export MARIADB_PASSWORD=L1f3ray
 
 	export RED='\033[0;31m'
 	export GREEN='\033[0;32m'
