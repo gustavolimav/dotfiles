@@ -63,7 +63,7 @@ function parse_git_current_branch {
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 }
 
-function parse_git_current_branch_with_parantheses {
+function parse_git_current_branch_with_parentheses {
 	parse_git_current_branch | sed 's/.*/(&)/'
 }
 
