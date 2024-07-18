@@ -74,7 +74,7 @@ list_db_mariadb() {
 # MYSQL
 
 start_mysql_container() {
-    docker run --name mysql-container -v "$MYSQL_CONFIG_PATH/my.cnf:/etc/mysql/conf.d/my.cnf" -p 3306:3306 -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" -d mysql
+    docker run --name mysql-container -e MYSQL_ALLOW_EMPTY_PASSWORD=true -p 3306:3306 mysql:8.0.22
 }
 
 copy_dump_to_container_mysql() {

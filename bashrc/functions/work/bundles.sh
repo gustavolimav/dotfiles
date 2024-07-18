@@ -175,7 +175,7 @@ setprop(){
 
 		db_name="lportal_${dir_name}"
 
-		cdb ${db_name}
+		cdb_mysql ${db_name}
 
 		echo "jdbc.default.url=jdbc:mysql://localhost/${db_name}?useUnicode=true&characterEncoding=UTF-8&useFastDateParsing=false" >> portal-setup-wizard.properties
 	fi
