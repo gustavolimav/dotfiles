@@ -101,3 +101,15 @@ function createBranch() {
 	# Create the branch
 	git checkout -b "$branchName"
 }
+
+function git_fetch_pr {
+	if [[ "${1}" != */github\.com/* ]] ||
+	   [[ "${1}" != */pull/* ]]
+	then
+		echo "URL ${1} does not point to a GitHub pull request."
+	else
+		IFS='/' read -r -a github_pr_parts <<< "${1}"
+
+		git fetch --no-tags git@github.com:${github_pr_parts[3]}/${github_pr_parts[4]}.git pull/${github_pr_parts[6]}/head:pr-${github_pr_parts[6]}
+	fi
+}

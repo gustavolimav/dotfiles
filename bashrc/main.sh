@@ -21,4 +21,3 @@ unset NPM_CONFIG_PREFIX # Adding this so I can use NVM
 customize_path
 customize_aliases
 customize_prompt
-include_custom_bashrc
