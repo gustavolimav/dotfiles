@@ -59,7 +59,7 @@ ij() {
 }
 
 intellij() {
-	ghome
+	git_home
 	/home/me/Downloads/ideaIU-2024.1.3/idea-IU-241.17890.1/bin/idea.sh .
 }
 
