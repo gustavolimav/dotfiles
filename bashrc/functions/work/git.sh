@@ -91,9 +91,11 @@ function createBranch() {
 	day=$(date +"%d")
 	month=$(date +"%m")
 
-	# Convert typeOfTicket and branchTitle to uppercase and replace spaces with underscores
+	# Convert typeOfTicket to uppercase and replace spaces with underscores
 	typeOfTicketFormatted=$(echo "$typeOfTicket" | tr ' ' '_' | tr '[:lower:]' '[:upper:]')
-	branchTitleFormatted=$(echo "$branchTitle" | tr ' ' '_' | tr '[:lower:]' '[:upper:]')
+
+	# replace branchTitle spaces with underscores
+	branchTitleFormatted=$(echo "$branchTitle" | tr ' ' '_')
 
 	# Construct branch name
 	branchName="${year}_${day}_${month}_${typeOfTicketFormatted}_${ticketCode}_${branchTitleFormatted}"
