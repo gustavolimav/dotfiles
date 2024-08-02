@@ -59,7 +59,7 @@ function parse_git_current_branch_with_parentheses {
 	parse_git_current_branch | sed 's/.*/(&)/'
 }
 
-function createBranch() {
+function create_branch() {
 	ticketCode=$1
 	typeOfTicket=$2
 	branchTitle=$3
