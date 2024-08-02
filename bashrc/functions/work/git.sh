@@ -104,6 +104,28 @@ function createBranch() {
 	git checkout -b "$branchName"
 }
 
+function commit_with_pattern() {
+	local commitMessage=$1
+	local ticketCode=$2
+
+	local folderName=$(git stash show --name-only | head -n 1 | xargs dirname)
+	while [[ ! -f "$folderName/.lfrbuild-portal" && "$folderName" != "/" ]]; do
+		folderName=$(dirname "$folderName")
+	done
+	if [[ "$folderName" == "." ]]; then
+		folderName=$(basename "$(pwd)")
+	fi
+
+	if [[ -z "$ticketCode" ]]; then
+		ticketCode=$(git log -1 --pretty=format:%s | awk '{print $1}')
+	fi
+
+	local jiraLink="https://liferay.atlassian.net/browse/${ticketCode}"
+
+	git commit -m "${ticketCode} ${folderName}: ${commitMessage}" -m "${jiraLink}"
+}
+
+
 function git_fetch_pr {
 	if [[ "${1}" != */github\.com/* ]] ||
 	   [[ "${1}" != */pull/* ]]
@@ -114,4 +136,99 @@ function git_fetch_pr {
 
 		git fetch --no-tags git@github.com:${github_pr_parts[3]}/${github_pr_parts[4]}.git pull/${github_pr_parts[6]}/head:pr-${github_pr_parts[6]}
 	fi
+}
+
+function apply_pattern_to_commits() {
+	# Check if git is available
+	if ! command -v git &> /dev/null; then
+		echo "git command not found. Please install git."
+		return 1
+	fi
+
+	# Check if the current directory is a Git repository
+	if ! git rev-parse --is-inside-work-tree &> /dev/null; then
+		echo "Not inside a Git repository. Please navigate to a Git repository."
+		return 1
+	fi
+
+	local ticketCode=$1
+	local numCommits=$2
+
+	# Validate input parameters
+	if [[ -z "$numCommits" ]]; then
+		echo "Number of commits must be specified."
+		return 1
+	fi
+
+	if [[ -z "$ticketCode" ]]; then
+		ticketCode=$(git log -1 --pretty=format:%s | awk '{print $1}')
+	fi
+
+	local jiraLink="https://liferay.atlassian.net/browse/${ticketCode}"
+
+	# Create a temporary script to modify the rebase sequence
+	local rebaseScript=$(mktemp)
+	cat << EOF > "$rebaseScript"
+#!/bin/bash
+sed -i 's/^pick /edit /' "\$1"
+EOF
+
+	chmod +x "$rebaseScript"
+
+	# Perform the interactive rebase
+	GIT_SEQUENCE_EDITOR="$rebaseScript" git rebase -i HEAD~"$numCommits"
+
+	if [[ $? -ne 0 ]]; then
+		echo "Rebase failed. Please resolve conflicts and continue rebase manually."
+		return 1
+	fi
+
+	# Amend each commit message manually
+	for i in $(seq 1 $numCommits); do
+		amend_commit_message "$ticketCode" "$jiraLink"
+		git rebase --continue
+
+		if [[ $? -ne 0 ]]; then
+			echo "Rebase failed during commit amending. Please resolve conflicts and continue rebase manually."
+			return 1
+		fi
+	done
+
+	# Clean up the temporary script
+	rm "$rebaseScript"
+
+	echo "Pattern applied to $numCommits commits."
+}
+
+function amend_commit_message() {
+	local ticketCode=$1
+	local jiraLink=$2
+
+	# Determine the folder name based on the files changed in the commit
+	local commitHash=$(git log --format=%H -n 1 HEAD)
+	local folderName=$(git diff-tree --no-commit-id --name-only -r "$commitHash" | head -n 1 | xargs dirname)
+	local maxIterations=10
+	local iterationCount=0
+
+	while [[ ! -f "$folderName/.lfrbuild-portal" && "$folderName" != "/" && $iterationCount -lt $maxIterations ]]; do
+		folderName=$(dirname "$folderName")
+		((iterationCount++))
+	done
+
+	if [[ "$folderName" == "/" || "$folderName" == "." || $iterationCount -ge $maxIterations ]]; then
+		folderName=$(basename "$(pwd)")
+	fi
+
+	folderName=$(basename "$folderName")
+
+	# Check if the commit message already follows the pattern
+	local commitMessage=$(git log --format=%B -n 1 HEAD)
+	local pattern="${ticketCode} ${folderName}:"
+	if [[ $commitMessage == "$pattern"* ]]; then
+		echo "Commit message already follows the pattern."
+		return
+	fi
+
+	# Amend the commit message
+	git commit --amend --no-edit --message="${ticketCode} ${folderName}: $commitMessage" --message="${jiraLink}"
 }
