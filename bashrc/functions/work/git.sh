@@ -138,73 +138,46 @@ function git_fetch_pr {
 	fi
 }
 
-function apply_pattern_to_commits() {
-	# Check if git is available
+#!/bin/bash
+
+function check_git_available() {
 	if ! command -v git &> /dev/null; then
 		echo "git command not found. Please install git."
 		return 1
 	fi
+	return 0
+}
 
-	# Check if the current directory is a Git repository
+function check_inside_git_repo() {
 	if ! git rev-parse --is-inside-work-tree &> /dev/null; then
 		echo "Not inside a Git repository. Please navigate to a Git repository."
 		return 1
 	fi
+	return 0
+}
 
+function get_ticket_code_from_commit() {
 	local ticketCode=$1
-	local numCommits=$2
-
-	# Validate input parameters
-	if [[ -z "$numCommits" ]]; then
-		echo "Number of commits must be specified."
-		return 1
-	fi
-
 	if [[ -z "$ticketCode" ]]; then
 		ticketCode=$(git log -1 --pretty=format:%s | awk '{print $1}')
 	fi
+	echo "$ticketCode"
+}
 
-	local jiraLink="https://liferay.atlassian.net/browse/${ticketCode}"
-
-	# Create a temporary script to modify the rebase sequence
+function create_rebase_script() {
 	local rebaseScript=$(mktemp)
 	cat << EOF > "$rebaseScript"
 #!/bin/bash
 sed -i 's/^pick /edit /' "\$1"
 EOF
-
 	chmod +x "$rebaseScript"
-
-	# Perform the interactive rebase
-	GIT_SEQUENCE_EDITOR="$rebaseScript" git rebase -i HEAD~"$numCommits"
-
-	if [[ $? -ne 0 ]]; then
-		echo "Rebase failed. Please resolve conflicts and continue rebase manually."
-		return 1
-	fi
-
-	# Amend each commit message manually
-	for i in $(seq 1 $numCommits); do
-		amend_commit_message "$ticketCode" "$jiraLink"
-		git rebase --continue
-
-		if [[ $? -ne 0 ]]; then
-			echo "Rebase failed during commit amending. Please resolve conflicts and continue rebase manually."
-			return 1
-		fi
-	done
-
-	# Clean up the temporary script
-	rm "$rebaseScript"
-
-	echo "Pattern applied to $numCommits commits."
+	echo "$rebaseScript"
 }
 
 function amend_commit_message() {
 	local ticketCode=$1
 	local jiraLink=$2
 
-	# Determine the folder name based on the files changed in the commit
 	local commitHash=$(git log --format=%H -n 1 HEAD)
 	local folderName=$(git diff-tree --no-commit-id --name-only -r "$commitHash" | head -n 1 | xargs dirname)
 	local maxIterations=10
@@ -221,7 +194,6 @@ function amend_commit_message() {
 
 	folderName=$(basename "$folderName")
 
-	# Check if the commit message already follows the pattern
 	local commitMessage=$(git log --format=%B -n 1 HEAD)
 	local pattern="${ticketCode} ${folderName}:"
 	if [[ $commitMessage == "$pattern"* ]]; then
@@ -229,6 +201,43 @@ function amend_commit_message() {
 		return
 	fi
 
-	# Amend the commit message
 	git commit --amend --no-edit --message="${ticketCode} ${folderName}: $commitMessage" --message="${jiraLink}"
+}
+
+function apply_pattern_to_commits() {
+	check_git_available || return 1
+	check_inside_git_repo || return 1
+
+	local ticketCode=$1
+	local numCommits=$2
+
+	if [[ -z "$numCommits" ]]; then
+		echo "Number of commits must be specified."
+		return 1
+	fi
+
+	ticketCode=$(get_ticket_code_from_commit "$ticketCode")
+	local jiraLink="https://liferay.atlassian.net/browse/${ticketCode}"
+
+	local rebaseScript=$(create_rebase_script)
+
+	GIT_SEQUENCE_EDITOR="$rebaseScript" git rebase -i HEAD~"$numCommits"
+
+	if [[ $? -ne 0 ]]; then
+		echo "Rebase failed. Please resolve conflicts and continue rebase manually."
+		return 1
+	fi
+
+	for i in $(seq 1 $numCommits); do
+		amend_commit_message "$ticketCode" "$jiraLink"
+		git rebase --continue
+
+		if [[ $? -ne 0 ]]; then
+			echo "Rebase failed during commit amending. Please resolve conflicts and continue rebase manually."
+			return 1
+		fi
+	done
+
+	rm "$rebaseScript"
+	echo "Pattern applied to $numCommits commits."
 }
