@@ -100,13 +100,7 @@ function commit_with_pattern() {
 	local commitMessage=$1
 	local ticketCode=$2
 
-	local folderName=$(git stash show --name-only | head -n 1 | xargs dirname)
-	while [[ ! -f "$folderName/.lfrbuild-portal" && "$folderName" != "/" ]]; do
-		folderName=$(dirname "$folderName")
-	done
-	if [[ "$folderName" == "." ]]; then
-		folderName=$(basename "$(pwd)")
-	fi
+	local folderName=$(find_foulder_with_lfrbuild)
 
 	if [[ -z "$ticketCode" ]]; then
 		ticketCode=$(git log -1 --pretty=format:%s | awk '{print $1}')
