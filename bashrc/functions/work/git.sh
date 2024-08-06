@@ -59,13 +59,12 @@ function parse_git_current_branch_with_parentheses {
 	parse_git_current_branch | sed 's/.*/(&)/'
 }
 
-function create_branch() {
-	ticketCode=$1
-	typeOfTicket=$2
-	branchTitle=$3
+function print_help_message() {
+	local functionName="$1"
 
-	if [ "$1" == "help" ] || [ "$1" == "" ]; then
-		echo -e "${YELLOW}Usage:${NC} createBranch <ticketCode> <typeOfTicket> <branchTitle>"
+	case "$functionName" in
+	create_branch)
+		echo -e "${YELLOW}Usage:${NC} create_branch <ticketCode> <typeOfTicket> <branchTitle>"
 		echo
 		echo -e "${YELLOW}Arguments:${NC}"
 		echo -e "  ${BLUE}ticketCode${NC}     The ticket code, e.g., LPD-31099"
@@ -75,6 +74,125 @@ function create_branch() {
 		echo -e "${YELLOW}Example:${NC}"
 		echo -e "  createBranch LPD-31099 \"test fix\" \"terms filter\""
 		echo -e "  This will create a branch named: YYYY_DD_MM_TEST_FIX_LPD-31099_TERMS_FILTER"
+		;;
+	git_home)
+		echo -e "${YELLOW}Usage:${NC} git_home"
+		echo
+		echo -e "${YELLOW}Description:${NC} Changes the current directory to the root of the current Git repository."
+		;;
+	git_grep)
+		echo -e "${YELLOW}Usage:${NC} git_grep <pattern> [path] [ref]"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}pattern${NC}   The pattern to search for."
+		echo -e "  ${BLUE}path${NC}      The path to limit the search to. (optional)"
+		echo -e "  ${BLUE}ref${NC}       The reference to search in. (optional)"
+		echo
+		echo -e "${YELLOW}Example:${NC}"
+		echo -e "  gitGrep 'TODO' src/ main"
+		echo -e "  This will search for 'TODO' in files under the 'src/' directory in the 'main' branch."
+		;;
+	git_init)
+		echo -e "${YELLOW}Usage:${NC} git_init <directory>"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}directory${NC}   The name of the directory to create and initialize as a Git repository."
+		echo
+		echo -e "${YELLOW}Example:${NC}"
+		echo -e "  gitInit myproject"
+		echo -e "  This will create a directory named 'myproject', change into it, initialize it as a Git repository, and create some initial files."
+		;;
+	parse_git_current_branch)
+		echo -e "${YELLOW}Usage:${NC} parse_git_current_branch"
+		echo
+		echo -e "${YELLOW}Description:${NC} Retrieves the name of the current Git branch."
+		;;
+	parse_git_current_branch_with_parentheses)
+		echo -e "${YELLOW}Usage:${NC} parse_git_current_branch_with_parentheses"
+		echo
+		echo -e "${YELLOW}Description:${NC} Retrieves the name of the current Git branch and wraps it in parentheses."
+		;;
+	create_pull_request)
+		echo -e "${YELLOW}Usage:${NC} create_pull_request <repositoryToSend> [ticketCode]"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}repositoryToSend${NC}   The repository to send the pull request to."
+		echo -e "  ${BLUE}ticketCode${NC}          The ticket code associated with the pull request. (optional)"
+		echo
+		echo -e "${YELLOW}Description:${NC} Creates a pull request with the specified repository and ticket code."
+		;;
+	commit_with_pattern)
+		echo -e "${YELLOW}Usage:${NC} commit_with_pattern <commitMessage> [ticketCode]"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}commitMessage${NC}   The commit message."
+		echo -e "  ${BLUE}ticketCode${NC}      The ticket code associated with the commit. (optional)"
+		echo
+		echo -e "${YELLOW}Description:${NC} Commits changes with the specified commit message and ticket code."
+		;;
+	git_fetch_pr)
+		echo -e "${YELLOW}Usage:${NC} git_fetch_pr <pullRequestUrl>"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}pullRequestUrl${NC}   The URL of the pull request."
+		echo
+		echo -e "${YELLOW}Description:${NC} Fetches the changes from a GitHub pull request."
+		;;
+	check_git_available)
+		echo -e "${YELLOW}Usage:${NC} check_git_available"
+		echo
+		echo -e "${YELLOW}Description:${NC} Checks if the git command is available."
+		;;
+	check_inside_git_repo)
+		echo -e "${YELLOW}Usage:${NC} check_inside_git_repo"
+		echo
+		echo -e "${YELLOW}Description:${NC} Checks if the current directory is inside a Git repository."
+		;;
+	get_ticket_code_from_commit)
+		echo -e "${YELLOW}Usage:${NC} get_ticket_code_from_commit"
+		echo
+		echo -e "${YELLOW}Description:${NC} Retrieves the ticket code from the latest commit message."
+		;;
+	create_rebase_script)
+		echo -e "${YELLOW}Usage:${NC} create_rebase_script"
+		echo
+		echo -e "${YELLOW}Description:${NC} Creates a temporary rebase script."
+		;;
+	amend_commit_message)
+		echo -e "${YELLOW}Usage:${NC} amend_commit_message [ticketCode]"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}ticketCode${NC}   The ticket code associated with the commit. (optional)"
+		echo
+		echo -e "${YELLOW}Description:${NC} Amends the commit message with the specified ticket code."
+		;;
+	find_foulder_with_lfrbuild)
+		echo -e "${YELLOW}Usage:${NC} apply_pattern_to_commits"
+		echo
+		echo -e "${YELLOW}Description:${NC} Finds the folder with the .lfrbuild-portal file."
+		;;
+	apply_pattern_to_commits)
+		echo -e "${YELLOW}Usage:${NC} apply_pattern_to_commits <numCommits> [ticketCode]"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}numCommits${NC}    The number of commits to apply the pattern to."
+		echo -e "  ${BLUE}ticketCode${NC}    The ticket code associated with the commits. (optional)"
+		echo
+		echo -e "${YELLOW}Description:${NC} Applies the pattern to the specified number of commits."
+		;;
+	*)
+		echo "No help message available for $functionName"
+		;;
+	esac
+}
+
+function create_branch() {
+	ticketCode=$1
+	typeOfTicket=$2
+	branchTitle=$3
+
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message create_branch
 		return
 	fi
 
@@ -98,11 +216,22 @@ function create_branch() {
 
 function generate_ticket_url() {
 	local ticketCode="$1"
+
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message generate_ticket_url
+		return
+	fi
+
 	echo "https://liferay.atlassian.net/browse/$ticketCode"
 }
 
 function fetch_ticket_name() {
 	local ticketCode="$1"
+
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message fetch_ticket_name
+		return
+	fi
 
 	local response=$(curl -s -u ${JIRA_USERNAME}:${JIRA_API_KEY} -X GET -H "Content-Type: application/json" "https://liferay.atlassian.net/rest/api/3/issue/$ticketCode")
 
@@ -114,6 +243,11 @@ function fetch_ticket_name() {
 function create_pull_request() {
 	local repositoryToSend="$1"
 	local ticketCode="$2"
+
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message create_pull_request
+		return
+	fi
 
 	if [[ -z "$repositoryToSend" ]]; then
 		echo "Repository to send must be specified."
@@ -138,6 +272,11 @@ function commit_with_pattern() {
 	local commitMessage=$1
 	local ticketCode=$2
 
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message commit_with_pattern
+		return
+	fi
+
 	if [[ -z "$commitMessage" ]]; then
 		echo "Commit message must be specified."
 		return 1
@@ -159,6 +298,12 @@ function commit_with_pattern() {
 }
 
 function git_fetch_pr {
+
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message git_fetch_pr
+		return
+	fi
+
 	if [[ "${1}" != */github\.com/* ]] ||
 		[[ "${1}" != */pull/* ]]; then
 		echo "URL ${1} does not point to a GitHub pull request."
@@ -170,6 +315,12 @@ function git_fetch_pr {
 }
 
 function check_git_available() {
+
+	if [ "$1" == "help" ]; then
+		print_help_message check_git_available
+		return
+	fi
+
 	if ! command -v git &>/dev/null; then
 		echo "git command not found. Please install git."
 		return 1
@@ -178,6 +329,12 @@ function check_git_available() {
 }
 
 function check_inside_git_repo() {
+
+	if [ "$1" == "help" ]; then
+		print_help_message check_inside_git_repo
+		return
+	fi
+
 	if ! git rev-parse --is-inside-work-tree &>/dev/null; then
 		echo "Not inside a Git repository. Please navigate to a Git repository."
 		return 1
@@ -186,12 +343,23 @@ function check_inside_git_repo() {
 }
 
 function get_ticket_code_from_commit() {
+
+	if [ "$1" == "help" ]; then
+		print_help_message get_ticket_code_from_commit
+		return
+	fi
+
 	ticketCode=$(git log -1 --pretty=format:%s | awk '{print $1}')
 
 	echo "$ticketCode"
 }
 
 function create_rebase_script() {
+	if [ "$1" == "help" ]; then
+		print_help_message create_rebase_script
+		return
+	fi
+
 	local rebaseScript=$(mktemp)
 	cat <<EOF >"$rebaseScript"
 #!/bin/bash
@@ -206,6 +374,11 @@ function amend_commit_message() {
 	check_inside_git_repo || return 1
 
 	local ticketCode=$1
+
+	if [ "$1" == "help" ] || [ "$1" == "" ]; then
+		print_help_message amend_commit_message
+		return
+	fi
 
 	if [[ -z "$ticketCode" ]]; then
 		ticketCode=$(get_ticket_code_from_commit "$ticketCode")
@@ -232,6 +405,12 @@ function amend_commit_message() {
 }
 
 function find_foulder_with_lfrbuild() {
+
+	if [ "$1" == "help" ]; then
+		print_help_message find_foulder_with_lfrbuild
+		return
+	fi
+
 	local commitHash=$(git log --format=%H -n 1 HEAD)
 	local folderName=$(git diff-tree --no-commit-id --name-only -r "$commitHash" | head -n 1 | xargs dirname)
 	local maxIterations=20
@@ -257,6 +436,11 @@ function apply_pattern_to_commits() {
 
 	local numCommits=$1
 	local ticketCode=$2
+
+	if [ "$1" == "help" ]; then
+		print_help_message apply_pattern_to_commits
+		return
+	fi
 
 	if [[ -z "$numCommits" ]]; then
 		echo "Number of commits must be specified."
