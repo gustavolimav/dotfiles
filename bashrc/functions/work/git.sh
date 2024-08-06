@@ -96,6 +96,34 @@ function create_branch() {
 	git checkout -b "$branchName"
 }
 
+function generate_ticket_url() {
+	local ticketCode="$1"
+	echo "https://liferay.atlassian.net/browse/$ticketCode"
+}
+
+function fetch_ticket_name() {
+	local ticketCode="$1"
+
+	local response=$(curl -s -u ${JIRA_USERNAME}:${JIRA_API_KEY} -X GET -H "Content-Type: application/json" "https://liferay.atlassian.net/rest/api/3/issue/$ticketCode")
+
+	local ticketName=$(echo "$response" | jq -r '.fields.summary')
+
+	echo "$ticketName"
+}
+
+function create_pull_request() {
+	local repositoryToSend="$1"
+	local ticketCode="$2"
+	local ticketName=$(fetch_ticket_name "$ticketCode")
+
+	local url=$(generate_ticket_url "$ticketCode")
+
+	local prTitle="${ticketCode}: ${ticketName}"
+	local prBody="Ticket: $url"
+
+	gpr -u "$repositoryToSend" submit "$prBody" "$prTitle"
+}
+
 function commit_with_pattern() {
 	local commitMessage=$1
 	local ticketCode=$2
@@ -106,7 +134,7 @@ function commit_with_pattern() {
 		ticketCode=$(git log -1 --pretty=format:%s | awk '{print $1}')
 	fi
 
-	local jiraLink="https://liferay.atlassian.net/browse/${ticketCode}"
+	local jiraLink=$(generate_ticket_url "$ticketCode")
 
 	git commit -m "${ticketCode} ${folderName}: ${commitMessage}" -m "${jiraLink}"
 }
@@ -169,7 +197,7 @@ function amend_commit_message() {
 		return
 	fi
 
-	local jiraLink="https://liferay.atlassian.net/browse/${ticketCode}"
+	local jiraLink=$(generate_ticket_url "$ticketCode")
 
 	local folderName=$(find_foulder_with_lfrbuild)
 

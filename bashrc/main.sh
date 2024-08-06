@@ -5,6 +5,7 @@ BASH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$BASH_DIR/functions/work/customize_path.sh" # Load properties first
 source "$BASH_DIR/functions/work/customize_alias.sh" # Load aliases
 source "$BASH_DIR/functions/work/customize_passwords.sh" # Load passwords
+source "$BASH_DIR/functions/work/customize_api_key.sh" # Load passwords
 source "$BASH_DIR/functions/work/db.sh" # Load functions related to databases
 source "$BASH_DIR/functions/work/bundles.sh" # Load functions related to Liferay workspace setup
 source "$BASH_DIR/functions/work/git.sh" # Load functions related to git
