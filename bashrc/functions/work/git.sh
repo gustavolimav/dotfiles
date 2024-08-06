@@ -114,6 +114,16 @@ function fetch_ticket_name() {
 function create_pull_request() {
 	local repositoryToSend="$1"
 	local ticketCode="$2"
+
+	if [[ -z "$repositoryToSend" ]]; then
+		echo "Repository to send must be specified."
+		return 1
+	fi
+
+	if [[ -z "$ticketCode" ]]; then
+		ticketCode=$(get_ticket_code_from_commit)
+	fi
+
 	local ticketName=$(fetch_ticket_name "$ticketCode")
 
 	local url=$(generate_ticket_url "$ticketCode")
@@ -127,6 +137,15 @@ function create_pull_request() {
 function commit_with_pattern() {
 	local commitMessage=$1
 	local ticketCode=$2
+
+	if [[ -z "$commitMessage" ]]; then
+		echo "Commit message must be specified."
+		return 1
+	fi
+
+	if [[ -z "$ticketCode" ]]; then
+		ticketCode=$(get_ticket_code_from_commit)
+	fi
 
 	local folderName=$(find_foulder_with_lfrbuild)
 
