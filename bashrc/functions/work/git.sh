@@ -208,7 +208,7 @@ function create_branch() {
 	branchTitleFormatted=$(echo "$branchTitle" | tr ' ' '_')
 
 	# Construct branch name
-	branchName="${year}_${day}_${month}_${typeOfTicketFormatted}_${ticketCode}_${branchTitleFormatted}"
+	branchName="${year}_${month}_${day}_${typeOfTicketFormatted}_${ticketCode}_${branchTitleFormatted}"
 
 	# Create the branch
 	git checkout -b "$branchName"
