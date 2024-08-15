@@ -113,7 +113,7 @@ function print_help_message() {
 		echo -e "${YELLOW}Description:${NC} Retrieves the name of the current Git branch and wraps it in parentheses."
 		;;
 	create_pull_request)
-		echo -e "${YELLOW}Usage:${NC} create_pull_request <userToSend> [ticketCode]"
+		echo -e "${YELLOW}Usage:${NC} create_pull_request <userToSend> [ticketCode] [branchToSend]"
 		echo
 		echo -e "${YELLOW}Arguments:${NC}"
 		echo -e "  ${BLUE}userToSend${NC}   The user to send the pull request to."
