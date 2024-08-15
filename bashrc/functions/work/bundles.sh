@@ -23,7 +23,7 @@ set_up_worktree_liferay_workspace(){
 		local actualPath=$(pwd)
 		echo "[INFO] Starting the worktree setup for $actualPath"
 
-		echo "app.server.parent.dir=/home/$USER/dev/projects/bundles/${name}" > app.server.$USER.properties
+		echo "app.server.parent.dir=/home/$USER/dev/bundles/${name}" > app.server.$USER.properties
 
 		echo "baseline.jar.report.level=off" >> build.$USER.properties
 		echo "junit.debug=true" >> build.$USER.properties
