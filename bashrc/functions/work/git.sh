@@ -113,12 +113,13 @@ function print_help_message() {
 		echo -e "${YELLOW}Description:${NC} Retrieves the name of the current Git branch and wraps it in parentheses."
 		;;
 	create_pull_request)
-		echo -e "${YELLOW}Usage:${NC} create_pull_request <userToSend> [ticketCode] [branchToSend]"
+		echo -e "${YELLOW}Usage:${NC} create_pull_request <userToSend> [ticketCode] [branchToSend] [prTitle]"
 		echo
 		echo -e "${YELLOW}Arguments:${NC}"
 		echo -e "  ${BLUE}userToSend${NC}   The user to send the pull request to."
-		echo -e "  ${BLUE}ticketCode${NC}          The ticket code associated with the pull request. (optional)"
-		echo -e "  ${BLUE}branchToSend${NC}         The branch to send the pull request from. (optional)"
+		echo -e "  ${BLUE}ticketCode${NC}   The ticket code associated with the pull request. (optional)"
+		echo -e "  ${BLUE}branchToSend${NC} The branch to send the pull request from. (optional)"
+		echo -e "  ${BLUE}prTitle${NC}      The title of the pull request. (optional)"
 		echo
 		echo -e "${YELLOW}Description:${NC} Creates a pull request with the specified repository and ticket code."
 		;;
@@ -245,6 +246,7 @@ function create_pull_request() {
 	local userToSend="$1"
 	local ticketCode="$2"
 	local branchToSend="$3"
+	local prTitle="$4"
 
 	if [ "$1" == "help" ] || [ "$1" == "" ]; then
 		print_help_message create_pull_request
@@ -264,8 +266,12 @@ function create_pull_request() {
 
 	local url=$(generate_ticket_url "$ticketCode")
 
-	local prTitle="${ticketCode}: ${ticketName}"
-	local prBody="Ticket: $url"
+	local defaultPrTitle="${ticketCode}: ${ticketName}"
+    local prBody="Ticket: $url"
+
+    if [[ -z "$prTitle" ]]; then
+        prTitle="$defaultPrTitle"
+    fi
 
 	if [[ -n "$branchToSend" ]]; then
 		gpr -b "$branchToSend" -u "$userToSend" submit "$prBody" "$prTitle"
