@@ -102,6 +102,20 @@ function open_sublime_git {
 	done
 }
 
+function backport_lpd() {
+	local lpd=$1
+
+	echo "[Info] Backporting ${lpd}."
+
+	local hashs_to_cp=$(get_git_hashs_formated $lpd)
+
+	echo "[Info] Cherry-picking the following commits: ${hashs_to_cp}."
+
+	git cherry-pick $hashs_to_cp
+
+	echo "[Info] Done."
+}
+
 
 function customize_prompt {
 	PS1="\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] \$(parse_git_current_branch_with_parentheses)\n\$ "

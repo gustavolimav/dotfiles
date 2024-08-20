@@ -34,7 +34,7 @@ set_up_worktree_liferay_workspace(){
 		echo "nodejs.node.env=off" >> build.$USER.properties
 
 		ant setup-sdk compile install-portal-snapshots && cd modules/core/portal-bootstrap && gw bSPEM deploy && cd -
-		ant setup-profile-dxp
+		# ant setup-profile-dxp
 
 		ij
 

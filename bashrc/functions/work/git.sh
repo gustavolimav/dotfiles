@@ -482,3 +482,11 @@ function apply_pattern_to_commits() {
 	rm "$rebaseScript"
 	echo "Pattern applied to $numCommits commits."
 }
+
+function get_git_hashs_formated() {
+	local lpd=$1
+	
+	local formated_git_hashs=$(git log upstream/master --grep $lpd --pretty=format:"%H%n" | tac | paste -sd " " -)
+
+	echo $formated_git_hashs
+}
