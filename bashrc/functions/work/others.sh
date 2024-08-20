@@ -54,11 +54,11 @@ function beforePR() {
     deploy
 }
 
-ij() {
+function ij() {
 	${IJ_CLONE_PATH}/intellij_libsources "$@"
 }
 
-intellij() {
+function intellij() {
 	git_home
 	/home/me/Downloads/ideaIU-2024.1.3/idea-IU-241.17890.1/bin/idea.sh .
 }
@@ -169,7 +169,7 @@ function execute_gradlew {
 	fi
 }
 
-gw () {
+function gw () {
 	local root_level
 	root_level=$(git rev-parse --show-toplevel 2>/dev/null)
 	if [[ -n $root_level && -f "$root_level/gradlew" ]]

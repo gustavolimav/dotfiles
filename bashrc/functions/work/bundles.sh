@@ -1,4 +1,4 @@
-set_up_worktree_liferay_workspace(){
+function set_up_worktree_liferay_workspace(){
 
 	if [[ $1 == "help" ]]; then
 		echo "Usage: set_up_worktree_liferay_workspace [name]"
@@ -42,7 +42,7 @@ set_up_worktree_liferay_workspace(){
 	fi
 }
 
-createBundle(){
+function create_bundle(){
 
 	if [[ $1 == "help" ]]; then
 		echo "Usage: createBundle [name]"
@@ -70,7 +70,7 @@ createBundle(){
 	fi
 }
 
-run(){
+function run(){
 
 	if [[ $1 == "help" ]]; then
 		echo "Usage: run"
@@ -93,7 +93,7 @@ run(){
 	else ./$tomcatfile/bin/catalina.sh jpda run; fi
 }
 
-setprop(){
+function setprop(){
 
 	if [[ $1 == "help" ]]; then
 		echo "Usage: setprop [db]"
