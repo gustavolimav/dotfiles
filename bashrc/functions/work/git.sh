@@ -182,6 +182,14 @@ function print_help_message() {
 		echo
 		echo -e "${YELLOW}Description:${NC} Applies the pattern to the specified number of commits."
 		;;
+	get_git_hashs_formated)
+		echo -e "${YELLOW}Usage:${NC} get_git_hashs_formated <lpd>"
+		echo 
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}lpd${NC}    The lpd to get the hashs from."
+		echo
+		echo -e "${YELLOW}Description:${NC} Get the hashs from the lpd."
+		;;
 	*)
 		echo "No help message available for $functionName"
 		;;
