@@ -37,16 +37,18 @@ create_database_mariadb() {
 
 import_dump_mariadb() {
     local database_name=$1
+    local dump_file_path=$2
 
-    if [ "$1" == "help" ] || [ "$1" == "" ]; then
+    if [ "$1" == "help" ] || [ "$1" == "" ] || [ "$2" == "" ]; then
         echo -e "${YELLOW}Usage:${NC} import_dump_mariadb <database_name>"
         echo ""
         echo -e "${YELLOW}Arguments:${NC}"
         echo -e "  ${BLUE}<database_name>${NC}    Name of the database to import the dump into"
+        echo -e "  ${BLUE}<dump_file_path>${NC}   Path to the SQL dump file to be imported"
         return
     fi
 
-    docker exec -i mariadb-container mariadb -u root -p"$MARIADB_ROOT_PASSWORD" "$database_name" < /dump.sql
+    docker exec -i mariadb-container mariadb -u root -p"$MARIADB_ROOT_PASSWORD" "$database_name" < "$dump_file_path"
 }
 
 import_to_database_mariadb() {
@@ -107,16 +109,18 @@ create_database_mysql() {
 
 import_dump_mysql() {
     local database_name=$1
+    local dump_file_path=$2
 
-    if [ "$1" == "help" ] || [ "$1" == "" ]; then
+    if [ "$1" == "help" ] || [ "$1" == "" ] || [ "$2" == "" ]; then
         echo -e "${YELLOW}Usage:${NC} import_dump_mysql <database_name>"
         echo ""
         echo -e "${YELLOW}Arguments:${NC}"
         echo -e "  ${BLUE}<database_name>${NC}    Name of the database to import the dump into"
+        echo -e "  ${BLUE}<dump_file_path>${NC}   Path to the SQL dump file to be imported"
         return
     fi
 
-    docker exec -i mysql-container mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$database_name" < /dump.sql
+    docker exec -i mysql-container mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$database_name" < "$dump_file_path"
 }
 
 import_to_database_mysql() {
