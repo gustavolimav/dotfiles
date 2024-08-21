@@ -224,6 +224,7 @@ function create_branch() {
 	git checkout -b "$branchName"
 }
 
+
 function generate_ticket_url() {
 	local ticketCode="$1"
 

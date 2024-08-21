@@ -1,2 +1,2 @@
-functions/work/customize_passwords.sh
-functions/work/customize_api_key.sh
+functions/work/customize_passwords.bashrc
+functions/work/customize_api_key.bashrc
