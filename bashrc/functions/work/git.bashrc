@@ -190,6 +190,14 @@ function print_help_message() {
 		echo
 		echo -e "${YELLOW}Description:${NC} Get the hashs from the lpd."
 		;;
+	git_add_worktree)
+		echo -e "${YELLOW}Usage:${NC} git_add_worktree <tag>"
+		echo
+		echo -e "${YELLOW}Arguments:${NC}"
+		echo -e "  ${BLUE}tag${NC}    The tag to create the worktree."
+		echo
+		echo -e "${YELLOW}Description:${NC} Add a worktree with the tag."
+		;;
 	*)
 		echo "No help message available for $functionName"
 		;;
