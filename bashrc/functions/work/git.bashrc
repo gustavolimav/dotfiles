@@ -499,3 +499,27 @@ function get_git_hashs_formated() {
 
 	echo $formated_git_hashs
 }
+
+function git_add_worktree() {
+	if [[ $1 == "" ]]; then
+		print_help_message git_add_tag
+		return
+	fi
+
+	local worktreePath=~/dev/projects/worktree/$1
+
+	git fetch --no-tags upstream tags/$1:tags/$1
+
+	git worktree add -f "$worktreePath" $1
+
+	echo "[Info] Worktree was added in $worktreePath"
+
+	while true; do
+		read -p "Would you like to go there? y|n " yn
+		case $yn in
+			[Yy]* ) cd "$worktreePath"; break;;
+			[Nn]* ) echo "Ok!"; break;;
+			* ) echo "Please answer y or n.";;
+		esac
+	done
+}

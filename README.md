@@ -1,6 +1,6 @@
 # Dotfiles
 
-This repository contains configuration files for setting up your development environment. Follow the instructions below to set up your `.zshrc` with the configurations provided in this repository.
+This repository contains configuration files for setting up your development environment. Follow the instructions below to set up your `.zshrc` with the configurations providepowd in this repository.
 
 ## Setup Instructions
 
