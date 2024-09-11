@@ -156,6 +156,7 @@ function create_pull_request() {
 function commit_with_pattern() {
 	local commitMessage=$1
 	local ticketCode=$2
+	local commitDescription=$3
 
 	if [ "$1" == "help" ] || [ "$1" == "" ]; then
 		print_help_message commit_with_pattern
@@ -179,7 +180,7 @@ function commit_with_pattern() {
 
 	local jiraLink=$(generate_ticket_url "$ticketCode")
 
-	git commit -m "${ticketCode} ${folderName}: ${commitMessage}" -m "${jiraLink}"
+	git commit -m "${ticketCode} ${folderName}: ${commitMessage}" -m "${commitDescription}" -m "${jiraLink}"
 }
 
 function git_fetch_pr {

@@ -215,11 +215,12 @@ function print_help_message() {
 		echo -e "${YELLOW}Description:${NC} Creates a pull request with the specified repository and ticket code."
 		;;
 	commit_with_pattern)
-		echo -e "${YELLOW}Usage:${NC} commit_with_pattern <commitMessage> [ticketCode]"
+		echo -e "${YELLOW}Usage:${NC} commit_with_pattern <commitMessage> [ticketCode] [commitDescription]"
 		echo
 		echo -e "${YELLOW}Arguments:${NC}"
 		echo -e "  ${BLUE}commitMessage${NC}   The commit message."
 		echo -e "  ${BLUE}ticketCode${NC}      The ticket code associated with the commit. (optional)"
+		echo -e "  ${BLUE}commitDescription${NC} The description of the commit. (optional)"
 		echo
 		echo -e "${YELLOW}Description:${NC} Commits changes with the specified commit message and ticket code."
 		;;
