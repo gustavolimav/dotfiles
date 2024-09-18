@@ -102,44 +102,6 @@ function open_sublime_git {
 	done
 }
 
-function backport_lpd() {
-	local remote=$2
-	local branch=$3
-	local lpd=$1
-
-	if [ -z ${lpd} ]
-	then
-		print_help_message backport_lpd
-		return
-	fi
-
-	if [ -z ${remote} ]
-	then
-		remote="upstream"
-	fi
-
-	if [ -z ${branch} ]
-	then
-		branch="master"
-	fi
-
-	echo "[Info] Cherry-picking commits from ${remote} with LPD -> ${lpd} "
-
-	local hashs_to_cp=$(get_git_hashs_formated ${remote}/${branch} ${lpd})
-
-	if [ -z ${hashs_to_cp} ]
-	then
-		echo "[Error] No commits found."
-		return
-	fi
-
-	echo "[Info] Cherry-picking the following commits: ${hashs_to_cp}."
-
-	git cherry-pick $hashs_to_cp
-
-	echo "[Info] Cherry-pick Done."
-}
-
 function print_help_message() {
 	local functionName="$1"
 

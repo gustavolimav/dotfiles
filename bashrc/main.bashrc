@@ -7,6 +7,7 @@ source "$BASH_DIR/functions/work/customize_alias.bashrc" # Load aliases
 source "$BASH_DIR/functions/work/customize_passwords.bashrc" # Load passwords
 
 customize_path
+customize_api_keys
 customize_aliases
 customize_passwords
 

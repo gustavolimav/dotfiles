@@ -114,6 +114,93 @@ function fetch_ticket_name() {
 	echo "$ticketName"
 }
 
+function backport_() {
+	local backportTicketCode=$1
+    local ticketName=$(fetch_ticket_name "$backportTicketCode")
+
+    # Split the ticketName by spaces first to isolate the branch name and ticket code
+    IFS=' ' read -r -a parts <<< "$ticketName"
+
+    # Extract the branch name and ticket code
+    local branchName="${parts[0]}"
+    local ticketCode="${parts[1]}"
+
+    # Extract the ticket description which starts from the third part
+    # Join the remaining parts after the second element
+    local ticketTitle=$(printf '%s ' "${parts[@]:2}")
+
+    # Remove the leading "| " from ticketDescription
+    ticketTitle="${ticketTitle#*| }"
+
+	# Convert branchName to lowercase
+    branchName=$(echo "$branchName" | tr '[:upper:]' '[:lower:]')
+
+	# Go to projects folder
+	cdp
+
+	# Go to the liferay-portal-ee folder
+	cd liferay-portal-ee
+
+	# Go to master-private branch
+	git checkout master-private
+
+	# Go to the branch
+	git checkout $branchName
+
+	# Pull the latest changes
+	git pull upstream $branchName
+
+	# Create the backport branch
+	git checkout -b $backportTicketCode
+
+	# Cherry pick the commits
+	backport_lpd "$ticketCode" "bchan"
+
+	# Pr title using pattern
+	local prTitle = "${ticketCode} | ${branchName}"
+
+	# Create PR
+	create_pull_request liferay $ticketCode $branchName $prTitle
+}
+
+function backport_lpd() {
+	local lpd=$1
+	local remote=$2
+	local branch=$3
+
+	if [ -z ${lpd} ]
+	then
+		print_help_message backport_lpd
+		return
+	fi
+
+	if [ -z ${remote} ]
+	then
+		remote="upstream"
+	fi
+
+	if [ -z ${branch} ]
+	then
+		branch="master"
+	fi
+
+	echo "[Info] Cherry-picking commits from ${remote} with ticketCode: ${lpd} "
+
+	local hashs_to_cp=$(get_git_hashs_formated ${remote}/${branch} ${lpd})
+
+	if [ -z ${hashs_to_cp} ]
+	then
+		echo "[Error] No commits found."
+		return
+	fi
+
+	echo "[Info] Cherry-picking the following commits: ${hashs_to_cp}."
+
+	git cherry-pick $hashs_to_cp
+
+	echo "[Info] Cherry-pick Done."
+}
+
 function create_pull_request() {
 	local userToSend="$1"
 	local ticketCode="$2"
@@ -141,7 +228,7 @@ function create_pull_request() {
 	local defaultPrTitle="${ticketCode}: ${ticketName}"
     local prBody="Ticket: $url"
 
-    if [[ -z "$prTitle" ]]; then
+    if [ "$prTitle" == "" ]; then
         prTitle="$defaultPrTitle"
     fi
 
