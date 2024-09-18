@@ -26,3 +26,6 @@ source ~/.local/share/blesh/ble.sh # Load Ble.sh further informations here: http
 shopt -s autocd # Enable autocd
 
 unset NPM_CONFIG_PREFIX # Adding this so I can use NVM
+
+export HISTSIZE=50000; 
+export HISTFILESIZE=50000;

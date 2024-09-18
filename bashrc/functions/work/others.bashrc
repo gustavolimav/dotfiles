@@ -120,7 +120,7 @@ function backport_lpd() {
 
 	if [ -z ${branch} ]
 	then
-		remote="master"
+		branch="master"
 	fi
 
 	echo "[Info] Cherry-picking commits from ${remote} with LPD -> ${lpd} "
